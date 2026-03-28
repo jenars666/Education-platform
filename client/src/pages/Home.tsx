@@ -37,7 +37,7 @@ export default function Home() {
             <a href="#courses" className="text-[#2C2C2C] hover:text-[#D97757] transition-colors">Courses</a>
             <a href="#experts" className="text-[#2C2C2C] hover:text-[#D97757] transition-colors">Experts</a>
             <a href="#testimonials" className="text-[#2C2C2C] hover:text-[#D97757] transition-colors">Success Stories</a>
-            <Button className="bg-[#D97757] hover:bg-[#C85F47] text-white">Enroll Now</Button>
+            <Button className="bg-[#D97757] hover:bg-[#C85F47] text-white" onClick={() => window.location.href = '/enroll'}>Enroll Now</Button>
           </div>
         </div>
       </nav>
@@ -58,7 +58,7 @@ export default function Home() {
                 Master practical teaching skills in just 8 weeks. From classroom management to digital tools, we prepare you to excel as a confident, skilled educator.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Button className="bg-[#D97757] hover:bg-[#C85F47] text-white text-lg px-8 py-6 h-auto rounded-lg">
+                <Button className="bg-[#D97757] hover:bg-[#C85F47] text-white text-lg px-8 py-6 h-auto rounded-lg" onClick={() => window.location.href = '/enroll'}>
                   Start Your Journey <ChevronRight className="ml-2" />
                 </Button>
                 <Button variant="outline" className="border-[#7BA89F] text-[#7BA89F] hover:bg-[#7BA89F] hover:text-white text-lg px-8 py-6 h-auto rounded-lg">
@@ -479,7 +479,7 @@ export default function Home() {
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
             Join 500+ teachers who have already started their journey with Educators Point. Limited seats available for the next batch.
           </p>
-          <Button className="bg-white text-[#D97757] hover:bg-[#F5F5F5] text-lg px-8 py-6 h-auto rounded-lg font-bold">
+          <Button className="bg-white text-[#D97757] hover:bg-[#F5F5F5] text-lg px-8 py-6 h-auto rounded-lg font-bold" onClick={() => window.location.href = '/enroll'}>
             Enroll Now - Secure Your Seat
           </Button>
           <p className="text-white/80 mt-4 text-sm">Early bird discount available for the first 20 enrollments</p>
