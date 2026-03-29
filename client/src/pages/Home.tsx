@@ -1,13 +1,13 @@
-/**
+/*
  * Educators Point - Home Page
- * Design Philosophy: Modern Minimalist with Warm Accents
- * Colors: Terracotta (#D97757), Sage Green (#7BA89F), Gold (#D4A574)
+ * Design Philosophy: Modern Blue Theme with Professional Accents
+ * Colors: Vibrant Blue (#2563EB), Light Blue (#60A5FA), Deep Blue (#1E40AF)
  * Typography: Poppins (headings) + Inter (body)
  */
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Users, Clock, Award, BookOpen, Zap, MessageCircle, Briefcase } from "lucide-react";
+import { ChevronRight, Users, Clock, Award, BookOpen, Zap, MessageCircle, Briefcase, Lightbulb, Shield, Laptop, CheckCircle, Target, Rocket } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -21,23 +21,118 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const modules = [
+    {
+      title: "Become a Professional Educator",
+      description: "Develop a strong teacher identity, ethical grounding, and classroom presence expected in top schools.",
+      icon: Users,
+      color: "#2563EB",
+      lightColor: "#DBEAFE"
+    },
+    {
+      title: "Understand Every Learner",
+      description: "Apply child psychology, differentiated instruction, and inclusive practices to handle diverse classrooms with confidence.",
+      icon: Lightbulb,
+      color: "#1E40AF",
+      lightColor: "#EFF6FF"
+    },
+    {
+      title: "Teach Across Curricula",
+      description: "Gain expertise in CBSE, Cambridge, and IB frameworks with outcome-driven lesson delivery.",
+      icon: BookOpen,
+      color: "#3B82F6",
+      lightColor: "#F0F9FF"
+    },
+    {
+      title: "Design Powerful Lessons",
+      description: "Create structured, engaging lesson plans using backward design, Bloom's taxonomy, and real assessment integration.",
+      icon: Zap,
+      color: "#2563EB",
+      lightColor: "#DBEAFE"
+    },
+    {
+      title: "Deliver Impactful Teaching",
+      description: "Implement activity-based, inquiry-driven, and project-based learning that drives student engagement.",
+      icon: Rocket,
+      color: "#1E40AF",
+      lightColor: "#EFF6FF"
+    },
+    {
+      title: "Master Classroom Control",
+      description: "Handle behaviour, build routines, and maintain high-engagement classrooms without stress.",
+      icon: Target,
+      color: "#3B82F6",
+      lightColor: "#F0F9FF"
+    },
+    {
+      title: "Ensure Student Safety & Compliance",
+      description: "Learn POCSO guidelines, safeguarding protocols, and professional boundaries every school expects.",
+      icon: Shield,
+      color: "#2563EB",
+      lightColor: "#DBEAFE"
+    },
+    {
+      title: "Leverage Digital Teaching",
+      description: "Use LMS platforms, smart tools, and digital resources to teach both offline and online effectively.",
+      icon: Laptop,
+      color: "#1E40AF",
+      lightColor: "#EFF6FF"
+    },
+    {
+      title: "Assess Like a Pro",
+      description: "Design formative & summative assessments, track progress, and deliver meaningful feedback.",
+      icon: CheckCircle,
+      color: "#3B82F6",
+      lightColor: "#F0F9FF"
+    },
+    {
+      title: "Get Interview & Demo Ready",
+      description: "Crack interviews with mock sessions, demo teaching, and portfolio building.",
+      icon: Briefcase,
+      color: "#2563EB",
+      lightColor: "#DBEAFE"
+    }
+  ];
+
+  const whyChooseUs = [
+    "NEP 2020 Aligned + International Pedagogy",
+    "Real Classroom Simulation (Not Just Theory)",
+    "Legal & Compliance Training (POCSO Included)",
+    "End-to-End Teacher Readiness",
+    "Placement-Focused Training Approach"
+  ];
+
+  const outcomes = [
+    "Confident classroom practitioner",
+    "Skilled in modern teaching methodologies",
+    "Ready for top school interviews",
+    "Capable of handling real classroom challenges from Day 1"
+  ];
+
+  const targetAudience = [
+    "Aspiring Teachers",
+    "Fresh Graduates",
+    "Career Switchers",
+    "Teachers aiming for IB / Cambridge Schools"
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md" : "bg-white"}`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#D97757] rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">EP</span>
             </div>
             <span className="font-bold text-xl text-[#2C2C2C]">Educators Point</span>
           </div>
           <div className="hidden md:flex gap-8 items-center">
-            <a href="#about" className="text-[#2C2C2C] hover:text-[#D97757] transition-colors">About</a>
-            <a href="#courses" className="text-[#2C2C2C] hover:text-[#D97757] transition-colors">Courses</a>
-            <a href="#experts" className="text-[#2C2C2C] hover:text-[#D97757] transition-colors">Experts</a>
-            <a href="#testimonials" className="text-[#2C2C2C] hover:text-[#D97757] transition-colors">Success Stories</a>
-            <Button className="bg-[#D97757] hover:bg-[#C85F47] text-white" onClick={() => window.location.href = '/enroll'}>Enroll Now</Button>
+            <a href="#about" className="text-[#2C2C2C] hover:text-[#2563EB] transition-colors">About</a>
+            <a href="#courses" className="text-[#2C2C2C] hover:text-[#2563EB] transition-colors">Courses</a>
+            <a href="#experts" className="text-[#2C2C2C] hover:text-[#2563EB] transition-colors">Experts</a>
+            <a href="#testimonials" className="text-[#2C2C2C] hover:text-[#2563EB] transition-colors">Success Stories</a>
+            <Button className="bg-[#2563EB] hover:bg-[#1E40AF] text-white" onClick={() => window.location.href = '/enroll'}>Enroll Now</Button>
           </div>
         </div>
       </nav>
@@ -48,34 +143,34 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="fade-in">
-              <div className="inline-block bg-[#F5F5F5] px-4 py-2 rounded-full mb-6">
-                <span className="text-[#D97757] font-semibold text-sm">🎓 Teacher Career Accelerator</span>
+              <div className="inline-block bg-[#EFF6FF] px-4 py-2 rounded-full mb-6">
+                <span className="text-[#2563EB] font-semibold text-sm">🎓 Transform Into a Classroom-Ready Educator</span>
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-[#2C2C2C] mb-6 leading-tight">
-                Transform Your Teaching <span className="text-[#D97757]">Career</span>
+                Master Teaching. <span className="text-[#2563EB]">Meet Global Standards.</span> Get Placed.
               </h1>
               <p className="text-lg text-[#7A7A7A] mb-8 leading-relaxed">
-                Master practical teaching skills in just 8 weeks. From classroom management to digital tools, we prepare you to excel as a confident, skilled educator.
+                Become a high-impact teacher equipped with NEP-aligned pedagogy, international curriculum expertise, and real classroom execution skills.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Button className="bg-[#D97757] hover:bg-[#C85F47] text-white text-lg px-8 py-6 h-auto rounded-lg" onClick={() => window.location.href = '/enroll'}>
+                <Button className="bg-[#2563EB] hover:bg-[#1E40AF] text-white text-lg px-8 py-6 h-auto rounded-lg" onClick={() => window.location.href = '/enroll'}>
                   Start Your Journey <ChevronRight className="ml-2" />
                 </Button>
-                <Button variant="outline" className="border-[#7BA89F] text-[#7BA89F] hover:bg-[#7BA89F] hover:text-white text-lg px-8 py-6 h-auto rounded-lg">
+                <Button variant="outline" className="border-[#60A5FA] text-[#2563EB] hover:bg-[#EFF6FF] text-lg px-8 py-6 h-auto rounded-lg">
                   Learn More
                 </Button>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <div className="text-3xl font-bold text-[#D97757]">8</div>
+                  <div className="text-3xl font-bold text-[#2563EB]">8</div>
                   <div className="text-sm text-[#7A7A7A]">Weeks Program</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-[#7BA89F]">100%</div>
+                  <div className="text-3xl font-bold text-[#3B82F6]">100%</div>
                   <div className="text-sm text-[#7A7A7A]">Live Classes</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-[#D4A574]">500+</div>
+                  <div className="text-3xl font-bold text-[#1E40AF]">500+</div>
                   <div className="text-sm text-[#7A7A7A]">Trained Teachers</div>
                 </div>
               </div>
@@ -96,7 +191,7 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-[#FAFAFA]">
+      <section id="about" className="py-20 bg-[#F8FAFC]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">About Educators Point</h2>
@@ -106,25 +201,25 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="card-warm">
-              <div className="w-12 h-12 bg-[#D97757] rounded-lg flex items-center justify-center mb-4">
-                <BookOpen className="text-white" size={24} />
+            <Card className="p-6 border border-[#E0E7FF] hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 bg-[#EFF6FF] rounded-lg flex items-center justify-center mb-4">
+                <BookOpen className="text-[#2563EB]" size={24} />
               </div>
               <h3 className="text-xl font-bold text-[#2C2C2C] mb-3">Practical Training</h3>
               <p className="text-[#7A7A7A]">Real-world teaching scenarios and hands-on practice with experienced mentors who understand classroom dynamics.</p>
             </Card>
 
-            <Card className="card-warm">
-              <div className="w-12 h-12 bg-[#7BA89F] rounded-lg flex items-center justify-center mb-4">
-                <Users className="text-white" size={24} />
+            <Card className="p-6 border border-[#E0E7FF] hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 bg-[#EFF6FF] rounded-lg flex items-center justify-center mb-4">
+                <Users className="text-[#2563EB]" size={24} />
               </div>
               <h3 className="text-xl font-bold text-[#2C2C2C] mb-3">Expert Mentorship</h3>
               <p className="text-[#7A7A7A]">Learn from experienced educators with 5-12+ years in the field. Personalized guidance for your career growth.</p>
             </Card>
 
-            <Card className="card-warm">
-              <div className="w-12 h-12 bg-[#D4A574] rounded-lg flex items-center justify-center mb-4">
-                <Award className="text-white" size={24} />
+            <Card className="p-6 border border-[#E0E7FF] hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 bg-[#EFF6FF] rounded-lg flex items-center justify-center mb-4">
+                <Award className="text-[#2563EB]" size={24} />
               </div>
               <h3 className="text-xl font-bold text-[#2C2C2C] mb-3">Placement Support</h3>
               <p className="text-[#7A7A7A]">100% placement assistance with school partnerships, interview prep, and career guidance for your success.</p>
@@ -133,103 +228,71 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Course Modules Section */}
+      {/* What You Will Master Section */}
       <section id="courses" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">8-Week Curriculum</h2>
+            <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">🚀 What You Will Master</h2>
             <p className="text-lg text-[#7A7A7A] max-w-2xl mx-auto">
               Comprehensive training covering all aspects of modern teaching, from foundational concepts to advanced digital skills.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* Course Module 1 */}
-            <Card className="card-warm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#D97757] to-[#C85F47] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-2xl">1-2</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#2C2C2C] mb-2">Foundations & Child Psychology</h3>
-                  <p className="text-[#7A7A7A] mb-3">Master teaching fundamentals, understand child development stages, and identify diverse learning styles.</p>
-                  <ul className="text-sm text-[#7A7A7A] space-y-1">
-                    <li>✓ Teacher roles and responsibilities</li>
-                    <li>✓ Developmental psychology</li>
-                    <li>✓ Learning style identification</li>
-                  </ul>
-                </div>
-              </div>
-            </Card>
-
-            {/* Course Module 2 */}
-            <Card className="card-warm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#7BA89F] to-[#6B9890] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-2xl">3-4</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#2C2C2C] mb-2">Lesson Planning & Classroom Management</h3>
-                  <p className="text-[#7A7A7A] mb-3">Design structured lessons using Bloom's taxonomy and master effective classroom behavior management techniques.</p>
-                  <ul className="text-sm text-[#7A7A7A] space-y-1">
-                    <li>✓ Curriculum-aligned lesson plans</li>
-                    <li>✓ Bloom's taxonomy application</li>
-                    <li>✓ Behavior management strategies</li>
-                  </ul>
-                </div>
-              </div>
-            </Card>
-
-            {/* Course Module 3 */}
-            <Card className="card-warm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#D4A574] to-[#C4956A] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-2xl">5-6</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#2C2C2C] mb-2">Teaching Methods & Digital Skills</h3>
-                  <p className="text-[#7A7A7A] mb-3">Learn activity-based teaching, micro-teaching practice, and master modern digital teaching tools and platforms.</p>
-                  <ul className="text-sm text-[#7A7A7A] space-y-1">
-                    <li>✓ Activity-based learning techniques</li>
-                    <li>✓ Google Slides & interactive tools</li>
-                    <li>✓ Hybrid classroom management</li>
-                  </ul>
-                </div>
-              </div>
-            </Card>
-
-            {/* Course Module 4 */}
-            <Card className="card-warm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#D97757] to-[#C85F47] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-2xl">7-8</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#2C2C2C] mb-2">Communication & Placement Ready</h3>
-                  <p className="text-[#7A7A7A] mb-3">Enhance communication skills, prepare for interviews, and deliver professional demo classes for placement success.</p>
-                  <ul className="text-sm text-[#7A7A7A] space-y-1">
-                    <li>✓ Professional communication training</li>
-                    <li>✓ Mock interviews & resume building</li>
-                    <li>✓ Demo class preparation</li>
-                  </ul>
-                </div>
-              </div>
-            </Card>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {modules.map((module, index) => {
+              const IconComponent = module.icon;
+              return (
+                <Card key={index} className="p-6 border border-[#E0E7FF] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                  <div className="flex gap-4 mb-4">
+                    <div 
+                      className="w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: module.lightColor }}
+                    >
+                      <IconComponent size={28} style={{ color: module.color }} />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{module.title}</h3>
+                  <p className="text-[#7A7A7A] text-sm">{module.description}</p>
+                </Card>
+              );
+            })}
           </div>
+        </div>
+      </section>
 
-          {/* Course Modules Visual */}
-          <div className="mt-12 rounded-2xl overflow-hidden shadow-lg">
-            <img 
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/course-modules-visual-djkPvVhcJLvHbYEPxkUfyK.webp"
-              alt="Course modules visualization"
-              className="w-full h-auto object-cover"
-            />
+      {/* Why This Program Stands Out */}
+      <section className="py-20 bg-[#F8FAFC]">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl font-bold text-[#2C2C2C] mb-8">🎯 Why This Program Stands Out</h2>
+              <div className="space-y-4">
+                {whyChooseUs.map((item, index) => (
+                  <div key={index} className="flex items-start gap-4">
+                    <CheckCircle className="text-[#2563EB] flex-shrink-0 mt-1" size={24} />
+                    <p className="text-[#2C2C2C] font-semibold text-lg">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-[#EFF6FF] to-[#F0F9FF] rounded-2xl p-8 border border-[#BFDBFE]">
+              <h3 className="text-2xl font-bold text-[#2C2C2C] mb-6">🔶 Outcome You Can Expect</h3>
+              <p className="text-[#7A7A7A] mb-6 font-semibold">Walk out as a:</p>
+              <ul className="space-y-3">
+                {outcomes.map((outcome, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="text-[#2563EB] font-bold">✓</span>
+                    <span className="text-[#2C2C2C]">{outcome}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Experts Section */}
-      <section id="experts" className="py-20 bg-[#FAFAFA]">
+      <section id="experts" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">Meet Our Expert Mentors</h2>
@@ -240,170 +303,56 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Expert 1 */}
-            <Card className="card-warm text-center overflow-hidden hover:shadow-lg transition-all duration-300">
+            <Card className="p-6 text-center overflow-hidden hover:shadow-lg transition-all duration-300 border border-[#E0E7FF]">
               <div className="mb-6">
                 <img 
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-1-Rc3WLSMdgeLCQFdTPYSCiD.webp"
                   alt="Expert mentor"
-                  className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-[#D97757]"
+                  className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-[#2563EB]"
                 />
               </div>
               <h3 className="text-xl font-bold text-[#2C2C2C] mb-1">Priya Sharma</h3>
-              <p className="text-[#D97757] font-semibold mb-3">Curriculum & Teaching Methods Specialist</p>
+              <p className="text-[#2563EB] font-semibold mb-3">Curriculum & Teaching Methods Specialist</p>
               <p className="text-[#7A7A7A] text-sm mb-4">10+ years in classroom teaching and curriculum design. Specializes in activity-based learning and student engagement.</p>
               <div className="flex justify-center gap-2">
-                <span className="bg-[#F5F5F5] text-[#2C2C2C] text-xs px-3 py-1 rounded-full">Lesson Planning</span>
-                <span className="bg-[#F5F5F5] text-[#2C2C2C] text-xs px-3 py-1 rounded-full">Engagement</span>
+                <span className="bg-[#EFF6FF] text-[#2563EB] text-xs px-3 py-1 rounded-full font-semibold">Lesson Planning</span>
+                <span className="bg-[#EFF6FF] text-[#2563EB] text-xs px-3 py-1 rounded-full font-semibold">Engagement</span>
               </div>
             </Card>
 
             {/* Expert 2 */}
-            <Card className="card-warm text-center overflow-hidden hover:shadow-lg transition-all duration-300">
+            <Card className="p-6 text-center overflow-hidden hover:shadow-lg transition-all duration-300 border border-[#E0E7FF]">
               <div className="mb-6">
                 <img 
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-2-ma5dXffbG7uGSTA4xwrWtz.webp"
                   alt="Expert mentor"
-                  className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-[#7BA89F]"
+                  className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-[#1E40AF]"
                 />
               </div>
               <h3 className="text-xl font-bold text-[#2C2C2C] mb-1">Rajesh Kumar</h3>
-              <p className="text-[#7BA89F] font-semibold mb-3">Classroom Management & Leadership Coach</p>
+              <p className="text-[#1E40AF] font-semibold mb-3">Classroom Management & Leadership Coach</p>
               <p className="text-[#7A7A7A] text-sm mb-4">12+ years managing diverse classrooms. Expert in behavior management, student discipline, and creating positive learning environments.</p>
               <div className="flex justify-center gap-2">
-                <span className="bg-[#F5F5F5] text-[#2C2C2C] text-xs px-3 py-1 rounded-full">Management</span>
-                <span className="bg-[#F5F5F5] text-[#2C2C2C] text-xs px-3 py-1 rounded-full">Leadership</span>
+                <span className="bg-[#EFF6FF] text-[#1E40AF] text-xs px-3 py-1 rounded-full font-semibold">Management</span>
+                <span className="bg-[#EFF6FF] text-[#1E40AF] text-xs px-3 py-1 rounded-full font-semibold">Leadership</span>
               </div>
             </Card>
 
             {/* Expert 3 */}
-            <Card className="card-warm text-center overflow-hidden hover:shadow-lg transition-all duration-300">
+            <Card className="p-6 text-center overflow-hidden hover:shadow-lg transition-all duration-300 border border-[#E0E7FF]">
               <div className="mb-6">
                 <img 
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-3-USMSo4AK3BUhJR7idsZPPm.webp"
                   alt="Expert mentor"
-                  className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-[#D4A574]"
+                  className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-[#3B82F6]"
                 />
               </div>
               <h3 className="text-xl font-bold text-[#2C2C2C] mb-1">Anjali Desai</h3>
-              <p className="text-[#D4A574] font-semibold mb-3">Digital Tools & Communication Expert</p>
+              <p className="text-[#3B82F6] font-semibold mb-3">Digital Tools & Communication Expert</p>
               <p className="text-[#7A7A7A] text-sm mb-4">5+ years in EdTech and digital teaching. Passionate about modern teaching tools, online learning, and professional communication.</p>
               <div className="flex justify-center gap-2">
-                <span className="bg-[#F5F5F5] text-[#2C2C2C] text-xs px-3 py-1 rounded-full">Digital Tools</span>
-                <span className="bg-[#F5F5F5] text-[#2C2C2C] text-xs px-3 py-1 rounded-full">Communication</span>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Key Features Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">Why Choose Educators Point?</h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="card-warm text-center">
-              <div className="w-12 h-12 bg-[#D97757] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Clock className="text-white" size={24} />
-              </div>
-              <h3 className="font-bold text-[#2C2C2C] mb-2">Intensive 8 Weeks</h3>
-              <p className="text-sm text-[#7A7A7A]">Structured program with daily live sessions and practical workshops</p>
-            </Card>
-
-            <Card className="card-warm text-center">
-              <div className="w-12 h-12 bg-[#7BA89F] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Users className="text-white" size={24} />
-              </div>
-              <h3 className="font-bold text-[#2C2C2C] mb-2">Expert Mentors</h3>
-              <p className="text-sm text-[#7A7A7A]">Learn from 5-12+ years experienced educators</p>
-            </Card>
-
-            <Card className="card-warm text-center">
-              <div className="w-12 h-12 bg-[#D4A574] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Award className="text-white" size={24} />
-              </div>
-              <h3 className="font-bold text-[#2C2C2C] mb-2">100% Placement</h3>
-              <p className="text-sm text-[#7A7A7A]">Placement assistance and school partnerships</p>
-            </Card>
-
-            <Card className="card-warm text-center">
-              <div className="w-12 h-12 bg-[#D97757] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Zap className="text-white" size={24} />
-              </div>
-              <h3 className="font-bold text-[#2C2C2C] mb-2">Practical Skills</h3>
-              <p className="text-sm text-[#7A7A7A]">Hands-on training with real classroom simulations</p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-[#FAFAFA]">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">Success Stories</h2>
-            <p className="text-lg text-[#7A7A7A] max-w-2xl mx-auto">
-              Hear from teachers who transformed their careers with Educators Point
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <Card className="card-warm">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-[#D97757] rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold">SK</span>
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#2C2C2C]">Sneha Kumar</h4>
-                  <p className="text-sm text-[#7A7A7A]">B.Ed Graduate</p>
-                </div>
-              </div>
-              <p className="text-[#7A7A7A] mb-4 italic">"Educators Point gave me the confidence I needed. The practical training and expert mentorship helped me secure a position at a top CBSE school within weeks of completing the program."</p>
-              <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-[#D4A574]">★</span>
-                ))}
-              </div>
-            </Card>
-
-            {/* Testimonial 2 */}
-            <Card className="card-warm">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-[#7BA89F] rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold">AJ</span>
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#2C2C2C]">Arjun Joshi</h4>
-                  <p className="text-sm text-[#7A7A7A]">Career Switcher</p>
-                </div>
-              </div>
-              <p className="text-[#7A7A7A] mb-4 italic">"Coming from a non-teaching background, I was nervous. But the structured curriculum and supportive mentors made the transition smooth. Now I'm teaching at an international school!"</p>
-              <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-[#D4A574]">★</span>
-                ))}
-              </div>
-            </Card>
-
-            {/* Testimonial 3 */}
-            <Card className="card-warm">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-[#D4A574] rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold">MV</span>
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#2C2C2C]">Meera Verma</h4>
-                  <p className="text-sm text-[#7A7A7A]">Arts Graduate</p>
-                </div>
-              </div>
-              <p className="text-[#7A7A7A] mb-4 italic">"The digital teaching skills module was eye-opening. I learned how to engage students in the modern classroom. My first class went amazingly well!"</p>
-              <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-[#D4A574]">★</span>
-                ))}
+                <span className="bg-[#EFF6FF] text-[#3B82F6] text-xs px-3 py-1 rounded-full font-semibold">Digital Tools</span>
+                <span className="bg-[#EFF6FF] text-[#3B82F6] text-xs px-3 py-1 rounded-full font-semibold">Communication</span>
               </div>
             </Card>
           </div>
@@ -411,133 +360,92 @@ export default function Home() {
       </section>
 
       {/* Target Audience Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#F8FAFC]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">Who Should Join?</h2>
+            <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">🔥 Who This Is For</h2>
             <p className="text-lg text-[#7A7A7A] max-w-2xl mx-auto">
               Educators Point is designed for aspiring teachers from all backgrounds
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="card-warm">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 bg-[#D97757] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <BookOpen className="text-white" size={24} />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {targetAudience.map((audience, index) => (
+              <Card key={index} className="p-6 text-center border border-[#E0E7FF] hover:shadow-lg transition-all duration-300">
+                <div className="w-12 h-12 bg-[#EFF6FF] rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Users className="text-[#2563EB]" size={24} />
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">B.Ed Students & Graduates</h3>
-                  <p className="text-[#7A7A7A]">Final year students wanting stronger classroom skills or graduates struggling to secure school jobs.</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="card-warm">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 bg-[#7BA89F] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Briefcase className="text-white" size={24} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">Career Switchers</h3>
-                  <p className="text-[#7A7A7A]">Professionals from other sectors looking to transition into the rewarding teaching profession.</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="card-warm">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 bg-[#D4A574] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Users className="text-white" size={24} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">Non-B.Ed Graduates</h3>
-                  <p className="text-[#7A7A7A]">Arts and Science graduates passionate about becoming school teachers without formal B.Ed qualification.</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="card-warm">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 bg-[#D97757] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MessageCircle className="text-white" size={24} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">Anyone Passionate About Teaching</h3>
-                  <p className="text-[#7A7A7A]">If you're interested in building a stable, growing career in education, this program is for you.</p>
-                </div>
-              </div>
-            </Card>
+                <h3 className="text-lg font-bold text-[#2C2C2C]">{audience}</h3>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-[#D97757] to-[#C85F47]">
+      <section className="py-20 bg-gradient-to-r from-[#2563EB] to-[#1E40AF]">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">Ready to Transform Your Teaching Career?</h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join 500+ teachers who have already started their journey with Educators Point. Limited seats available for the next batch.
+          <h2 className="text-4xl font-bold text-white mb-6">⚡ Your Next Step</h2>
+          <p className="text-xl text-[#E0E7FF] mb-8 max-w-2xl mx-auto">
+            👉 Don't just learn teaching. Become employable. Become exceptional.
           </p>
-          <Button className="bg-white text-[#D97757] hover:bg-[#F5F5F5] text-lg px-8 py-6 h-auto rounded-lg font-bold" onClick={() => window.location.href = '/enroll'}>
-            Enroll Now - Secure Your Seat
+          <Button 
+            className="bg-white hover:bg-[#F0F9FF] text-[#2563EB] text-lg px-12 py-6 h-auto rounded-lg font-bold"
+            onClick={() => window.location.href = '/enroll'}
+          >
+            Enroll Now. Start Teaching with Confidence.
           </Button>
-          <p className="text-white/80 mt-4 text-sm">Early bird discount available for the first 20 enrollments</p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#2C2C2C] text-white py-12">
+      <footer className="bg-[#1F2937] text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-[#D97757] rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">EP</span>
                 </div>
                 <span className="font-bold text-lg">Educators Point</span>
               </div>
-              <p className="text-white/70 text-sm">Transforming teacher careers through practical training and expert mentorship.</p>
+              <p className="text-[#D1D5DB]">Transforming teachers into confident, skilled educators ready for top schools.</p>
             </div>
-
             <div>
               <h4 className="font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><a href="#about" className="hover:text-[#D97757] transition-colors">About Us</a></li>
-                <li><a href="#courses" className="hover:text-[#D97757] transition-colors">Courses</a></li>
-                <li><a href="#experts" className="hover:text-[#D97757] transition-colors">Experts</a></li>
-                <li><a href="#testimonials" className="hover:text-[#D97757] transition-colors">Success Stories</a></li>
+              <ul className="space-y-2 text-[#D1D5DB]">
+                <li><a href="#about" className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href="#courses" className="hover:text-white transition-colors">Courses</a></li>
+                <li><a href="#experts" className="hover:text-white transition-colors">Experts</a></li>
+                <li><a href="#testimonials" className="hover:text-white transition-colors">Success Stories</a></li>
               </ul>
             </div>
-
             <div>
               <h4 className="font-bold mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><a href="#" className="hover:text-[#D97757] transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-[#D97757] transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-[#D97757] transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-[#D97757] transition-colors">Terms & Conditions</a></li>
+              <ul className="space-y-2 text-[#D1D5DB]">
+                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms & Conditions</a></li>
               </ul>
             </div>
-
             <div>
               <h4 className="font-bold mb-4">Connect With Us</h4>
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 bg-[#D97757] rounded-lg flex items-center justify-center hover:bg-[#C85F47] transition-colors">
-                  <span className="text-white font-bold">f</span>
+                <a href="#" className="text-[#D1D5DB] hover:text-white transition-colors">
+                  <span className="text-2xl">f</span>
                 </a>
-                <a href="#" className="w-10 h-10 bg-[#7BA89F] rounded-lg flex items-center justify-center hover:bg-[#6B9890] transition-colors">
-                  <span className="text-white font-bold">in</span>
+                <a href="#" className="text-[#D1D5DB] hover:text-white transition-colors">
+                  <span className="text-2xl">in</span>
                 </a>
-                <a href="#" className="w-10 h-10 bg-[#D4A574] rounded-lg flex items-center justify-center hover:bg-[#C4956A] transition-colors">
-                  <span className="text-white font-bold">yt</span>
+                <a href="#" className="text-[#D1D5DB] hover:text-white transition-colors">
+                  <span className="text-2xl">yt</span>
                 </a>
               </div>
             </div>
           </div>
-
-          <div className="border-t border-white/20 pt-8 text-center text-white/70 text-sm">
-            <p>&copy; 2026 Educators Point. All rights reserved. Transforming teacher careers, one batch at a time.</p>
+          <div className="border-t border-[#374151] pt-8 text-center text-[#D1D5DB]">
+            <p>&copy; 2026 Educators Point. All rights reserved. Transforming teaching careers globally.</p>
           </div>
         </div>
       </footer>
