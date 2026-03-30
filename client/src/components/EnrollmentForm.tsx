@@ -1,13 +1,14 @@
 /**
  * EnrollmentForm Component
- * Design Philosophy: Modern Minimalist with Warm Accents
- * Features: Form validation, batch selection, email capture
+ * Design Philosophy: Modern Blue Theme with Premium Animations
+ * Features: Form validation, batch selection, multi-language support
  */
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface FormData {
   name: string;
@@ -43,6 +44,7 @@ const batches = [
 ];
 
 export default function EnrollmentForm() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -133,19 +135,18 @@ export default function EnrollmentForm() {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <Card className="card-warm">
-        <div className="mb-8">
+      <Card className="p-8 border border-[#E0E7FF] shadow-lg hover:shadow-xl transition-all duration-500">
+        <div className="mb-8 animate-fade-in">
           <h2 className="text-3xl font-bold text-[#2C2C2C] mb-2">
-            Enroll in Educators Point
+            {t('enroll.title')}
           </h2>
           <p className="text-[#7A7A7A]">
-            Join our next batch and transform your teaching career. Fill out the
-            form below to secure your seat.
+            {t('enroll.subtitle')}
           </p>
         </div>
 
         {submitSuccess && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3 animate-slide-in-left">
             <CheckCircle className="text-green-600 flex-shrink-0 mt-0.5" size={20} />
             <div>
               <h3 className="font-semibold text-green-900 mb-1">
@@ -160,7 +161,7 @@ export default function EnrollmentForm() {
         )}
 
         {submitError && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3 animate-slide-in-left">
             <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
             <div>
               <h3 className="font-semibold text-red-900 mb-1">Error</h3>
@@ -171,9 +172,9 @@ export default function EnrollmentForm() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Field */}
-          <div>
+          <div className="animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
             <label htmlFor="name" className="block text-sm font-semibold text-[#2C2C2C] mb-2">
-              Full Name *
+              {t('enroll.form.name')} *
             </label>
             <input
               type="text"
@@ -182,10 +183,10 @@ export default function EnrollmentForm() {
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter your full name"
-              className={`w-full px-4 py-3 rounded-lg border-2 transition-colors focus:outline-none ${
+              className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none focus:shadow-lg ${
                 errors.name
                   ? "border-red-500 bg-red-50 focus:border-red-600"
-                  : "border-[#E8E8E8] bg-white focus:border-[#D97757]"
+                  : "border-[#E0E7FF] bg-white focus:border-[#2563EB]"
               }`}
               disabled={isSubmitting}
             />
@@ -195,9 +196,9 @@ export default function EnrollmentForm() {
           </div>
 
           {/* Email Field */}
-          <div>
+          <div className="animate-slide-in-left" style={{ animationDelay: '0.2s' }}>
             <label htmlFor="email" className="block text-sm font-semibold text-[#2C2C2C] mb-2">
-              Email Address *
+              {t('enroll.form.email')} *
             </label>
             <input
               type="email"
@@ -206,10 +207,10 @@ export default function EnrollmentForm() {
               value={formData.email}
               onChange={handleChange}
               placeholder="your.email@example.com"
-              className={`w-full px-4 py-3 rounded-lg border-2 transition-colors focus:outline-none ${
+              className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none focus:shadow-lg ${
                 errors.email
                   ? "border-red-500 bg-red-50 focus:border-red-600"
-                  : "border-[#E8E8E8] bg-white focus:border-[#D97757]"
+                  : "border-[#E0E7FF] bg-white focus:border-[#2563EB]"
               }`}
               disabled={isSubmitting}
             />
@@ -219,19 +220,19 @@ export default function EnrollmentForm() {
           </div>
 
           {/* Batch Selection */}
-          <div>
+          <div className="animate-slide-in-left" style={{ animationDelay: '0.3s' }}>
             <label htmlFor="batch" className="block text-sm font-semibold text-[#2C2C2C] mb-2">
-              Select Your Batch *
+              {t('enroll.form.batch')} *
             </label>
             <select
               id="batch"
               name="batch"
               value={formData.batch}
               onChange={handleChange}
-              className={`w-full px-4 py-3 rounded-lg border-2 transition-colors focus:outline-none appearance-none bg-white ${
+              className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none focus:shadow-lg appearance-none bg-white ${
                 errors.batch
                   ? "border-red-500 bg-red-50 focus:border-red-600"
-                  : "border-[#E8E8E8] focus:border-[#D97757]"
+                  : "border-[#E0E7FF] focus:border-[#2563EB]"
               }`}
               disabled={isSubmitting}
             >
@@ -249,7 +250,7 @@ export default function EnrollmentForm() {
 
           {/* Batch Details */}
           {selectedBatch && (
-            <div className="p-4 bg-[#F5F5F5] rounded-lg border border-[#E8E8E8]">
+            <div className="p-4 bg-gradient-to-br from-[#EFF6FF] to-[#F0F9FF] rounded-lg border border-[#BFDBFE] animate-slide-in-left" style={{ animationDelay: '0.4s' }}>
               <h3 className="font-semibold text-[#2C2C2C] mb-2">Batch Details</h3>
               <div className="space-y-2 text-sm text-[#7A7A7A]">
                 <p>
@@ -262,7 +263,7 @@ export default function EnrollmentForm() {
                 </p>
                 <p>
                   <span className="font-semibold text-[#2C2C2C]">Available Seats:</span>{" "}
-                  <span className="text-[#D97757] font-semibold">
+                  <span className="text-[#2563EB] font-semibold">
                     {selectedBatch.seats}
                   </span>
                 </p>
@@ -274,23 +275,16 @@ export default function EnrollmentForm() {
           )}
 
           {/* Terms Agreement */}
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 animate-slide-in-left" style={{ animationDelay: '0.5s' }}>
             <input
               type="checkbox"
               id="terms"
-              className="mt-1 w-4 h-4 rounded border-[#E8E8E8] text-[#D97757] focus:ring-[#D97757]"
+              className="mt-1 w-4 h-4 rounded border-[#E0E7FF] text-[#2563EB] focus:ring-[#2563EB]"
               required
               disabled={isSubmitting}
             />
             <label htmlFor="terms" className="text-sm text-[#7A7A7A]">
-              I agree to the{" "}
-              <a href="#" className="text-[#D97757] hover:underline">
-                Terms & Conditions
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-[#D97757] hover:underline">
-                Privacy Policy
-              </a>
+              {t('enroll.form.terms')}
             </label>
           </div>
 
@@ -298,7 +292,8 @@ export default function EnrollmentForm() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#D97757] hover:bg-[#C85F47] text-white font-semibold py-3 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#2563EB] hover:bg-[#1E40AF] text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl animate-slide-in-left"
+            style={{ animationDelay: '0.6s' }}
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">
@@ -306,17 +301,47 @@ export default function EnrollmentForm() {
                 Submitting...
               </span>
             ) : (
-              "Secure Your Seat Now"
+              t('enroll.form.submit')
             )}
           </Button>
 
           {/* Additional Info */}
           <p className="text-center text-xs text-[#7A7A7A]">
-            We respect your privacy. Your information will only be used for enrollment
-            purposes.
+            {t('enroll.form.privacy')}
           </p>
         </form>
       </Card>
+
+      <style>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes slide-in-left {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.8s ease-out;
+        }
+
+        .animate-slide-in-left {
+          animation: slide-in-left 0.8s ease-out forwards;
+          opacity: 0;
+        }
+      `}</style>
     </div>
   );
 }
