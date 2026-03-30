@@ -260,14 +260,6 @@ export default function Home() {
                   </div>
                   <h3 className="text-lg font-bold text-[#2C2C2C] mb-2 group-hover:text-[#2563EB] transition-colors duration-300">{module.title}</h3>
                   <p className="text-[#7A7A7A] text-sm group-hover:text-[#2C2C2C] transition-colors duration-300">{module.desc}</p>
-                  {isHovered && (
-                    <div className="mt-4 pt-4 border-t border-[#E0E7FF] animate-fade-in">
-                      <div className="flex items-center gap-2 text-[#2563EB] font-semibold text-sm">
-                        <ChevronRight size={16} className="animate-pulse" />
-                        Learn more
-                      </div>
-                    </div>
-                  )}
                 </Card>
               );
             })}
