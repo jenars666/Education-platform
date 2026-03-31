@@ -55,7 +55,7 @@ export default function Enrollment() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 pb-32 md:pb-16">
         <div className="mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold text-[#2C2C2C] mb-4">{t('enroll.title')}</h1>
           <p className="text-lg text-[#7A7A7A]">{t('enroll.subtitle')}</p>

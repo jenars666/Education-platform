@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { StickyEnrollCTA } from "./components/StickyEnrollCTA";
 import Home from "./pages/Home";
 import Enrollment from "./pages/Enrollment";
 
@@ -37,6 +38,7 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Router />
+            <StickyEnrollCTA />
           </TooltipProvider>
         </ThemeProvider>
       </LanguageProvider>
