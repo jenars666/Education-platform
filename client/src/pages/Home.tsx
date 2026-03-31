@@ -140,7 +140,7 @@ export default function Home() {
             <Button className="bg-[#2563EB] hover:bg-[#1E40AF] text-white shadow-md hover:shadow-lg transition-all duration-300" onClick={() => window.location.href = '/enroll'}>{t('nav.enroll')}</Button>
           </div>
           <div className="md:hidden flex items-center gap-2">
-            <LanguageSelector />
+            {!isScrolled && <LanguageSelector />}
           </div>
         </div>
       </nav>
@@ -188,8 +188,8 @@ export default function Home() {
             <div className="fade-in animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
               <div className="rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 aspect-video">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/hero-teacher-classroom-W8EM7bLhpsogWR6pLwNT5C.webp"
-                  alt="Teacher in classroom"
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/hero-teacher-professional-m5h5vfoLfkFX2KxoWD9z6m.webp"
+                  alt="Professional teacher in modern classroom"
                   loading="lazy"
                   className="w-full h-full object-cover"
                 />

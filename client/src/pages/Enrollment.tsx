@@ -10,7 +10,7 @@ import { ChevronLeft, CheckCircle, Clock, Users, Award, Zap } from "lucide-react
 import { useLocation } from "wouter";
 import EnrollmentForm from "@/components/EnrollmentForm";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { LanguageSelector } from "@/components/LanguageSelector";
+
 
 export default function Enrollment() {
   const [, navigate] = useLocation();
@@ -28,7 +28,6 @@ export default function Enrollment() {
             <span className="font-bold text-xl text-[#2C2C2C]">Educators Point</span>
           </div>
           <div className="flex items-center gap-4">
-            <LanguageSelector />
             <Button
               variant="ghost"
               onClick={() => navigate("/")}
