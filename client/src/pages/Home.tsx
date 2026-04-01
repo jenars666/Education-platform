@@ -123,7 +123,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-lg" : "bg-white border-b border-[#E0E7FF]"}`}>
+      <nav className={`sticky top-0 z-50 transition-all duration-500 ease-in-out ${isScrolled ? "bg-white shadow-lg" : "bg-white border-b border-[#E0E7FF]"}`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 animate-fade-in">
             <div className="w-10 h-10 bg-gradient-to-br from-[#2563EB] to-[#1E40AF] rounded-lg flex items-center justify-center shadow-md">
@@ -139,7 +139,7 @@ export default function Home() {
             <LanguageSelector />
             <Button className="bg-[#2563EB] hover:bg-[#1E40AF] text-white shadow-md hover:shadow-lg transition-all duration-300" onClick={() => window.location.href = '/enroll'}>{t('nav.enroll')}</Button>
           </div>
-          <div className="md:hidden flex items-center gap-2">
+          <div className={`md:hidden flex items-center gap-2 transition-all duration-500 ease-in-out ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             {!isScrolled && <LanguageSelector />}
           </div>
         </div>
@@ -309,9 +309,9 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: t('expert.1.name'), title: t('expert.1.title'), desc: t('expert.1.desc'), tag1: t('expert.1.tag1'), tag2: t('expert.1.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-1-Rc3WLSMdgeLCQFdTPYSCiD.webp', color: '#2563EB' },
-              { name: t('expert.2.name'), title: t('expert.2.title'), desc: t('expert.2.desc'), tag1: t('expert.2.tag1'), tag2: t('expert.2.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-2-ma5dXffbG7uGSTA4xwrWtz.webp', color: '#1E40AF' },
-              { name: t('expert.3.name'), title: t('expert.3.title'), desc: t('expert.3.desc'), tag1: t('expert.3.tag1'), tag2: t('expert.3.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-3-USMSo4AK3BUhJR7idsZPPm.webp', color: '#3B82F6' }
+              { name: t('expert.1.name'), title: t('expert.1.title'), desc: t('expert.1.desc'), tag1: t('expert.1.tag1'), tag2: t('expert.1.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-priya-deKLhh2uDffoEnMdHFMUMr.webp', color: '#2563EB' },
+              { name: t('expert.2.name'), title: t('expert.2.title'), desc: t('expert.2.desc'), tag1: t('expert.2.tag1'), tag2: t('expert.2.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-rajesh-FQKhR6cB2nRqdVZ6mPUnw9.webp', color: '#1E40AF' },
+              { name: t('expert.3.name'), title: t('expert.3.title'), desc: t('expert.3.desc'), tag1: t('expert.3.tag1'), tag2: t('expert.3.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-anjali-6BhRb2WwQUnXNSKjUiJ7fd.webp', color: '#3B82F6' }
             ].map((expert, idx) => (
               <Card key={idx} className="p-6 text-center overflow-hidden hover:shadow-2xl transition-all duration-500 border border-[#E0E7FF] transform hover:-translate-y-4 group cursor-pointer">
                 <div className="mb-6 relative">
