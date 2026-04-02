@@ -188,8 +188,8 @@ export default function Home() {
             <div className="fade-in animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
               <div className="rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 aspect-video">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/hero-teacher-professional-m5h5vfoLfkFX2KxoWD9z6m.webp"
-                  alt="Professional teacher in modern classroom"
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/hero-classroom-diverse-654QZp8x4A7PBCkHcxiyut.webp"
+                  alt="Diverse teachers collaborating in modern classroom"
                   loading="lazy"
                   className="w-full h-full object-cover"
                 />

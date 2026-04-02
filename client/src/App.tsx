@@ -8,6 +8,9 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { StickyEnrollCTA } from "./components/StickyEnrollCTA";
 import Home from "./pages/Home";
 import Enrollment from "./pages/Enrollment";
+import AdminDashboard from "./pages/AdminDashboard";
+import ContentManager from "./pages/ContentManager";
+import Analytics from "./pages/Analytics";
 
 
 function Router() {
@@ -15,6 +18,9 @@ function Router() {
     <Switch>
       <Route path={"\\"} component={Home} />
       <Route path={"/enroll"} component={Enrollment} />
+      <Route path={"/admin"} component={AdminDashboard} />
+      <Route path={"/admin/content"} component={ContentManager} />
+      <Route path={"/admin/analytics"} component={Analytics} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
