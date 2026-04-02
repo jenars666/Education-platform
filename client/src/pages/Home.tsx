@@ -11,8 +11,13 @@ import { ChevronRight, Users, Clock, Award, BookOpen, Zap, MessageCircle, Briefc
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Home() {
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   const { t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredModule, setHoveredModule] = useState<number | null>(null);

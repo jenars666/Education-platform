@@ -12,8 +12,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ContentManager from "./pages/ContentManager";
 import Analytics from "./pages/Analytics";
 
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"\\"} component={Home} />

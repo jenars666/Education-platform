@@ -111,20 +111,50 @@ export default function EnrollmentForm() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call - in production, this would send to your backend
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const selectedBatchData = batches.find((b) => b.id === formData.batch);
+      if (!selectedBatchData) {
+        throw new Error("Invalid batch selected");
+      }
 
-      // Success
+      const startDate = new Date(selectedBatchData.startDate);
+      const endDate = new Date(startDate.getTime() + 56 * 24 * 60 * 60 * 1000);
+      const endDateStr = endDate.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      const response = await fetch("/api/enrollments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          batch: selectedBatchData.name,
+          batchStartDate: selectedBatchData.startDate,
+          batchEndDate: endDateStr,
+          price: 15000,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit enrollment");
+      }
+
       setSubmitSuccess(true);
       setFormData({ name: "", email: "", batch: "" });
 
-      // Reset success message after 5 seconds
       setTimeout(() => {
         setSubmitSuccess(false);
       }, 5000);
     } catch (error) {
       setSubmitError(
-        "An error occurred while submitting the form. Please try again."
+        error instanceof Error
+          ? error.message
+          : "An error occurred while submitting the form. Please try again."
       );
     } finally {
       setIsSubmitting(false);
