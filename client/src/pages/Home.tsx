@@ -153,9 +153,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-white via-[#F8FAFC] to-white pt-20 pb-32">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className="fade-in space-y-6">
+            <div className="fade-in space-y-6 order-1 md:order-1">
               <div className="inline-block bg-[#EFF6FF] px-4 py-2 rounded-full mb-6 animate-slide-in-left">
                 <span className="text-[#2563EB] font-semibold text-sm">{t('hero.badge')}</span>
               </div>
@@ -190,8 +190,8 @@ export default function Home() {
             </div>
 
             {/* Right Image */}
-            <div className="fade-in animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
-              <div className="rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 aspect-video">
+            <div className="fade-in animate-slide-in-right order-2 md:order-2" style={{ animationDelay: '0.2s' }}>
+              <div className="rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 w-full h-auto min-h-[400px]">
                 <img 
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/hero-classroom-diverse-654QZp8x4A7PBCkHcxiyut.webp"
                   alt="Diverse teachers collaborating in modern classroom"
@@ -241,31 +241,31 @@ export default function Home() {
             <p className="text-lg text-[#7A7A7A] max-w-2xl mx-auto">{t('courses.subtitle')}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {modules.map((module, index) => {
               const IconComponent = module.icon;
               const isHovered = hoveredModule === index;
               return (
                 <Card 
                   key={index} 
-                  className="p-6 border border-[#E0E7FF] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer group"
+                  className="p-8 border border-[#E0E7FF] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer group min-h-[280px] flex flex-col"
                   onMouseEnter={() => setHoveredModule(index)}
                   onMouseLeave={() => setHoveredModule(null)}
                 >
-                  <div className="flex gap-4 mb-4">
+                  <div className="flex gap-4 mb-6">
                     <div 
-                      className="w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-all duration-500 shadow-md"
+                      className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-all duration-500 shadow-md"
                       style={{ backgroundColor: module.lightColor }}
                     >
                       <IconComponent 
-                        size={28} 
+                        size={32} 
                         style={{ color: module.color }}
                         className="group-hover:rotate-12 transition-transform duration-500"
                       />
                     </div>
                   </div>
-                  <h3 className="text-lg font-bold text-[#2C2C2C] mb-2 group-hover:text-[#2563EB] transition-colors duration-300">{module.title}</h3>
-                  <p className="text-[#7A7A7A] text-sm group-hover:text-[#2C2C2C] transition-colors duration-300">{module.desc}</p>
+                  <h3 className="text-xl font-bold text-[#2C2C2C] mb-3 group-hover:text-[#2563EB] transition-colors duration-300 flex-grow">{module.title}</h3>
+                  <p className="text-[#7A7A7A] text-base group-hover:text-[#2C2C2C] transition-colors duration-300 leading-relaxed">{module.desc}</p>
                 </Card>
               );
             })}
