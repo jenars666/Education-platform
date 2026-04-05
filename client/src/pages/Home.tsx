@@ -7,7 +7,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Users, Clock, Award, BookOpen, Zap, MessageCircle, Briefcase, Lightbulb, Shield, Laptop, CheckCircle, Target, Rocket } from "lucide-react";
+import { ChevronRight, Users, Clock, Award, BookOpen, Zap, MessageCircle, Briefcase, Lightbulb, Shield, Laptop, CheckCircle, Target, Rocket, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -100,6 +100,41 @@ export default function Home() {
       icon: Briefcase,
       color: "#2563EB",
       lightColor: "#DBEAFE"
+    },
+    {
+      title: t('module.11.title'),
+      desc: t('module.11.desc'),
+      icon: Lightbulb,
+      color: "#1E40AF",
+      lightColor: "#EFF6FF"
+    },
+    {
+      title: t('module.12.title'),
+      desc: t('module.12.desc'),
+      icon: MessageCircle,
+      color: "#3B82F6",
+      lightColor: "#F0F9FF"
+    },
+    {
+      title: t('module.13.title'),
+      desc: t('module.13.desc'),
+      icon: Users,
+      color: "#2563EB",
+      lightColor: "#DBEAFE"
+    },
+    {
+      title: t('module.14.title'),
+      desc: t('module.14.desc'),
+      icon: Globe,
+      color: "#1E40AF",
+      lightColor: "#EFF6FF"
+    },
+    {
+      title: t('module.15.title'),
+      desc: t('module.15.desc'),
+      icon: Award,
+      color: "#3B82F6",
+      lightColor: "#F0F9FF"
     }
   ];
 
