@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Users, BookOpen, MessageSquare, Settings, LogOut, Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { BarChart3, Users, BookOpen, MessageSquare, Settings, LogOut, Plus, Edit, Trash2, Eye, EyeOff, Calendar, TrendingUp, FileText } from 'lucide-react';
+import { useLocation } from 'wouter';
 
 interface Enrollment {
   id: string;
@@ -32,6 +33,7 @@ interface Mentor {
 }
 
 export default function AdminDashboard() {
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
   const [enrollments, setEnrollments] = useState<Enrollment[]>([
     { id: '1', name: 'Rajesh Singh', email: 'rajesh@email.com', batch: 'April 2026', date: '2026-03-28', status: 'confirmed' },
@@ -82,15 +84,60 @@ export default function AdminDashboard() {
               <p className="text-xs text-[#7A7A7A]">Admin Dashboard</p>
             </div>
           </div>
-          <Button variant="outline" className="text-[#2563EB] border-[#2563EB] hover:bg-[#EFF6FF]">
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/content')} className="text-[#7A7A7A] hover:text-[#2563EB]">
+              <FileText className="w-4 h-4 mr-1" />
+              Content
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/analytics')} className="text-[#7A7A7A] hover:text-[#2563EB]">
+              <TrendingUp className="w-4 h-4 mr-1" />
+              Analytics
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/calendar')} className="text-[#7A7A7A] hover:text-[#2563EB]">
+              <Calendar className="w-4 h-4 mr-1" />
+              Calendar
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/crm')} className="text-[#7A7A7A] hover:text-[#2563EB]">
+              <Users className="w-4 h-4 mr-1" />
+              CRM
+            </Button>
+            <Button variant="outline" className="text-[#2563EB] border-[#2563EB] hover:bg-[#EFF6FF]">
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Admin Module Navigation */}
+        <div className="mb-8 p-4 bg-white border border-[#E0E7FF] rounded-lg">
+          <p className="text-sm text-[#7A7A7A] mb-3 font-semibold">Quick Access to Admin Modules</p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <Button variant="outline" onClick={() => setLocation('/admin')} className="border-[#2563EB] text-[#2563EB] hover:bg-[#EFF6FF]">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
+            <Button variant="outline" onClick={() => setLocation('/admin/content')} className="border-[#7A7A7A] hover:bg-gray-50">
+              <FileText className="w-4 h-4 mr-2" />
+              Content
+            </Button>
+            <Button variant="outline" onClick={() => setLocation('/admin/analytics')} className="border-[#7A7A7A] hover:bg-gray-50">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Analytics
+            </Button>
+            <Button variant="outline" onClick={() => setLocation('/admin/calendar')} className="border-[#7A7A7A] hover:bg-gray-50">
+              <Calendar className="w-4 h-4 mr-2" />
+              Calendar
+            </Button>
+            <Button variant="outline" onClick={() => setLocation('/admin/crm')} className="border-[#7A7A7A] hover:bg-gray-50">
+              <Users className="w-4 h-4 mr-2" />
+              CRM
+            </Button>
+          </div>
+        </div>
+
         {/* Stats Overview */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, idx) => {

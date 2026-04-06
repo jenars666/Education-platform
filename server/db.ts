@@ -2,6 +2,15 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import { 
+  cmsContent, 
+  analyticsEvents, 
+  calendarEvents, 
+  crmLeads, 
+  leadInteractions,
+  enrollments 
+} from "../drizzle/schema";
+import { desc, gte, lte, and } from "drizzle-orm";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -89,4 +98,168 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+/**
+ * CMS Content helpers
+ */
+export async function getCmsContentByType(contentType: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    return await (db
+      .select()
+      .from(cmsContent)
+      .where(eq(cmsContent.contentType, contentType)) as any);
+  } catch (error) {
+    console.error("[Database] Failed to get CMS content:", error);
+    return [];
+  }
+}
+
+/**
+ * Analytics helpers
+ */
+export async function getAnalyticsEventsByType(eventType: string, limit: number = 100) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    return await (db
+      .select()
+      .from(analyticsEvents)
+      .where(eq(analyticsEvents.eventType, eventType))
+      .orderBy(desc(analyticsEvents.timestamp))
+      .limit(limit) as any);
+  } catch (error) {
+    console.error("[Database] Failed to get analytics events:", error);
+    return [];
+  }
+}
+
+/**
+ * Calendar helpers
+ */
+export async function getCalendarEventsByDateRange(startDate: Date, endDate: Date) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    return await (db
+      .select()
+      .from(calendarEvents)
+      .where(
+        and(
+          gte(calendarEvents.startDate, startDate),
+          lte(calendarEvents.endDate, endDate)
+        )
+      )
+      .orderBy(calendarEvents.startDate) as any);
+  } catch (error) {
+    console.error("[Database] Failed to get calendar events:", error);
+    return [];
+  }
+}
+
+/**
+ * CRM helpers
+ */
+export async function getCrmLeadsByStatus(status: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    return await (db
+      .select()
+      .from(crmLeads)
+      .where(eq(crmLeads.status, status as any))
+      .orderBy(desc(crmLeads.createdAt)) as any);
+  } catch (error) {
+    console.error("[Database] Failed to get CRM leads:", error);
+    return [];
+  }
+}
+
+export async function getCrmLeadWithInteractions(leadId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    const lead = await (db
+      .select()
+      .from(crmLeads)
+      .where(eq(crmLeads.id, leadId))
+      .limit(1) as any);
+
+    if (!lead.length) return null;
+
+    const interactions = await (db
+      .select()
+      .from(leadInteractions)
+      .where(eq(leadInteractions.leadId, leadId))
+      .orderBy(desc(leadInteractions.createdAt)) as any);
+
+    return { ...lead[0], interactions };
+  } catch (error) {
+    console.error("[Database] Failed to get CRM lead with interactions:", error);
+    return null;
+  }
+}
+
+export async function getCrmLeadStats() {
+  const db = await getDb();
+  if (!db) {
+    return {
+      totalLeads: 0,
+      qualifiedLeads: 0,
+      enrolledLeads: 0,
+      avgLeadScore: 0,
+      conversionRate: "0",
+    };
+  }
+
+  try {
+    const leads = await (db.select() as any).from(crmLeads);
+    const totalLeads = leads.length;
+    const qualifiedLeads = leads.filter((l: any) => l.status === "qualified").length;
+    const enrolledLeads = leads.filter((l: any) => l.status === "enrolled").length;
+    const avgLeadScore = leads.length > 0
+      ? Math.round(leads.reduce((sum: number, l: any) => sum + l.leadScore, 0) / leads.length)
+      : 0;
+
+    return {
+      totalLeads,
+      qualifiedLeads,
+      enrolledLeads,
+      avgLeadScore,
+      conversionRate: totalLeads > 0 ? ((enrolledLeads / totalLeads) * 100).toFixed(2) : "0",
+    };
+  } catch (error) {
+    console.error("[Database] Failed to get CRM lead stats:", error);
+    return {
+      totalLeads: 0,
+      qualifiedLeads: 0,
+      enrolledLeads: 0,
+      avgLeadScore: 0,
+      conversionRate: "0",
+    };
+  }
+}
+
+/**
+ * Enrollment helpers
+ */
+export async function getEnrollmentsByStatus(status: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    return await (db
+      .select()
+      .from(enrollments)
+      .where(eq(enrollments.status, status as any))
+      .orderBy(desc(enrollments.createdAt)) as any);
+  } catch (error) {
+    console.error("[Database] Failed to get enrollments:", error);
+    return [];
+  }
+}
