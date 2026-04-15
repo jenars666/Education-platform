@@ -1,308 +1,134 @@
-/**
- * Enrollment Page
- * Design Philosophy: Modern Blue Theme with Premium Animations
- * Multi-language support with smooth transitions
- */
-
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, CheckCircle, Clock, Users, Award, Zap } from "lucide-react";
+import { ChevronLeft, CheckCircle, Clock, Users, Award, Zap, Shield, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import EnrollmentForm from "@/components/EnrollmentForm";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 
 export default function Enrollment() {
   const [, navigate] = useLocation();
   const { t } = useLanguage();
 
+  const benefits = [
+    { icon: Clock, title: "8-Week Program", desc: "Intensive, structured training with daily live sessions", color: "blue" },
+    { icon: Users, title: "Expert Mentors", desc: "Learn from 5-12+ years experienced educators", color: "indigo" },
+    { icon: Award, title: "100% Placement", desc: "Placement assistance with school partnerships", color: "violet" },
+    { icon: Zap, title: "Early Bird Offer", desc: "Special discount for first 20 enrollments", color: "cyan" }
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-100 italic font-sans">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white shadow-lg border-b border-[#E0E7FF]">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2 animate-fade-in">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#2563EB] to-[#1E40AF] rounded-lg flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-lg">EP</span>
+      <nav className="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 rotate-3">
+              <span className="text-white font-black text-xl italic leading-none">E</span>
             </div>
-            <span className="font-bold text-xl text-[#2C2C2C]">Educators Point</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/")}
-              className="text-[#2C2C2C] hover:text-[#2563EB] hover:bg-[#EFF6FF] transition-all duration-300"
-            >
-              <ChevronLeft className="mr-2" size={20} />
-              {t('nav.back')}
-            </Button>
-          </div>
+            <span className="font-black text-2xl tracking-tighter text-slate-900">Educators<span className="text-blue-600 font-medium">Point.</span></span>
+          </motion.div>
+          
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/")}
+            className="text-slate-500 hover:text-blue-600 font-bold uppercase tracking-widest text-xs gap-2"
+          >
+            <ChevronLeft size={16} />
+            {t('nav.back')}
+          </Button>
         </div>
       </nav>
 
-      {/* Breadcrumb */}
-      <div className="bg-[#F8FAFC] border-b border-[#E0E7FF]">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-[#7A7A7A]">
-            <a href="/" className="text-[#2563EB] hover:underline font-semibold">
-              {t('nav.about')}
-            </a>
-            <span>/</span>
-            <span className="font-semibold">{t('enroll.title')}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-16 pb-32 md:pb-16">
-        <div className="mb-12 animate-fade-in">
-          <h1 className="text-4xl font-bold text-[#2C2C2C] mb-4">{t('enroll.title')}</h1>
-          <p className="text-lg text-[#7A7A7A]">{t('enroll.subtitle')}</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-12 mb-16">
-          {/* Left Column - Benefits */}
-          <div className="md:col-span-1">
-            <div className="sticky top-24">
-              <h2 className="text-2xl font-bold text-[#2C2C2C] mb-8 animate-slide-in-left">
-                Why Enroll Today?
-              </h2>
-
-              <div className="space-y-6">
-                {/* Benefit 1 */}
-                <Card className="p-6 border border-[#E0E7FF] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-[#EFF6FF] rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#2563EB] group-hover:text-white transition-all duration-300 group-hover:scale-110">
-                      <Clock className="text-[#2563EB] group-hover:text-white transition-colors duration-300" size={24} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[#2C2C2C] mb-1 group-hover:text-[#2563EB] transition-colors duration-300">
-                        8-Week Program
-                      </h3>
-                      <p className="text-sm text-[#7A7A7A]">
-                        Intensive, structured training with daily live sessions
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Benefit 2 */}
-                <Card className="p-6 border border-[#E0E7FF] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group animate-slide-in-left" style={{ animationDelay: '0.2s' }}>
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-[#F0F9FF] rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#1E40AF] group-hover:text-white transition-all duration-300 group-hover:scale-110">
-                      <Users className="text-[#1E40AF] group-hover:text-white transition-colors duration-300" size={24} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[#2C2C2C] mb-1 group-hover:text-[#1E40AF] transition-colors duration-300">
-                        Expert Mentors
-                      </h3>
-                      <p className="text-sm text-[#7A7A7A]">
-                        Learn from 5-12+ years experienced educators
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Benefit 3 */}
-                <Card className="p-6 border border-[#E0E7FF] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group animate-slide-in-left" style={{ animationDelay: '0.3s' }}>
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-[#EFF6FF] rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#3B82F6] group-hover:text-white transition-all duration-300 group-hover:scale-110">
-                      <Award className="text-[#3B82F6] group-hover:text-white transition-colors duration-300" size={24} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[#2C2C2C] mb-1 group-hover:text-[#3B82F6] transition-colors duration-300">
-                        100% Placement
-                      </h3>
-                      <p className="text-sm text-[#7A7A7A]">
-                        Placement assistance with school partnerships
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Benefit 4 */}
-                <Card className="p-6 border border-[#E0E7FF] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group animate-slide-in-left" style={{ animationDelay: '0.4s' }}>
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-[#F0F9FF] rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#2563EB] group-hover:text-white transition-all duration-300 group-hover:scale-110">
-                      <Zap className="text-[#2563EB] group-hover:text-white transition-colors duration-300" size={24} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[#2C2C2C] mb-1 group-hover:text-[#2563EB] transition-colors duration-300">
-                        Early Bird Offer
-                      </h3>
-                      <p className="text-sm text-[#7A7A7A]">
-                        Special discount for first 20 enrollments
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* Stats */}
-              <div className="mt-8 p-6 bg-gradient-to-br from-[#EFF6FF] to-[#F0F9FF] rounded-lg border border-[#BFDBFE] hover:shadow-lg transition-all duration-300 animate-slide-in-left" style={{ animationDelay: '0.5s' }}>
-                <h3 className="font-semibold text-[#2C2C2C] mb-4">
-                  Program Stats
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-[#7A7A7A]">Trained Teachers</span>
-                    <span className="font-bold text-[#2563EB]">500+</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#7A7A7A]">Success Rate</span>
-                    <span className="font-bold text-[#1E40AF]">98%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#7A7A7A]">Avg. Salary Increase</span>
-                    <span className="font-bold text-[#3B82F6]">35%</span>
-                  </div>
+      <main className="container mx-auto px-6 py-20 pb-40">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-12 gap-20 items-start">
+            
+            {/* Left Content - Trust & Benefits */}
+            <div className="lg:col-span-4 space-y-12 lg:sticky lg:top-32">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] mb-6 ring-1 ring-blue-100">
+                  <Sparkles className="w-3 h-3" />
+                  Apply For Excellence
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Form */}
-          <div className="md:col-span-2">
-            <EnrollmentForm />
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="mt-20 pt-16 border-t border-[#E0E7FF]">
-          <h2 className="text-3xl font-bold text-[#2C2C2C] mb-12 text-center animate-fade-in">
-            {t('enroll.faq.title')}
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {[
-              { q: t('enroll.faq.q1'), a: t('enroll.faq.a1') },
-              { q: t('enroll.faq.q2'), a: t('enroll.faq.a2') },
-              { q: t('enroll.faq.q3'), a: t('enroll.faq.a3') },
-              { q: t('enroll.faq.q4'), a: t('enroll.faq.a4') },
-              { q: t('enroll.faq.q5'), a: t('enroll.faq.a5') },
-              { q: t('enroll.faq.q6'), a: t('enroll.faq.a6') }
-            ].map((faq, idx) => (
-              <Card key={idx} className="p-6 border border-[#E0E7FF] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group">
-                <h3 className="font-bold text-[#2C2C2C] mb-2 group-hover:text-[#2563EB] transition-colors duration-300">
-                  {faq.q}
-                </h3>
-                <p className="text-[#7A7A7A] text-sm group-hover:text-[#2C2C2C] transition-colors duration-300">
-                  {faq.a}
+                <h1 className="text-5xl lg:text-6xl font-black text-slate-900 leading-[0.95] mb-8 tracking-tighter italic">
+                  Join the <span className="text-blue-600 block">Elite Tier.</span>
+                </h1>
+                <p className="text-xl text-slate-500 font-medium leading-relaxed">
+                  Start your journey toward becoming a certified modern educator with our premium 8-week program.
                 </p>
-              </Card>
-            ))}
-          </div>
-        </div>
+              </motion.div>
 
-        {/* Contact Section */}
-        <div className="mt-20 p-8 bg-gradient-to-r from-[#2563EB] via-[#3B82F6] to-[#1E40AF] rounded-2xl text-white text-center hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
-          <h2 className="text-2xl font-bold mb-4">Have More Questions?</h2>
-          <p className="mb-6 text-[#E0E7FF]">
-            Our enrollment team is here to help. Reach out to us for any queries.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="mailto:info@educatorspoint.com"
-              className="px-6 py-3 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-[#F0F9FF] transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              Email Us
-            </a>
-            <a
-              href="tel:+919876543210"
-              className="px-6 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105"
-            >
-              Call Us
-            </a>
-          </div>
-        </div>
-      </div>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="grid gap-6"
+              >
+                {benefits.map((benefit, idx) => (
+                  <Card key={idx} className="p-8 border border-slate-100 bg-white hover:bg-slate-900 group transition-all duration-500 rounded-[2rem] shadow-sm">
+                    <div className="flex gap-6 items-center">
+                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-sm">
+                        <benefit.icon className="text-blue-600 w-7 h-7" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-black text-slate-900 group-hover:text-white mb-1 transition-colors tracking-tight italic">{benefit.title}</h3>
+                        <p className="text-slate-500 group-hover:text-slate-400 font-medium text-sm leading-relaxed transition-colors">{benefit.desc}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </motion.div>
 
-      {/* Footer */}
-      <footer className="bg-[#1F2937] text-white py-12 mt-20">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">EP</span>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8 }}
+                className="bg-slate-950 p-10 rounded-[3rem] text-white relative overflow-hidden shadow-2xl"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl" />
+                <Shield className="w-12 h-12 text-blue-500 mb-6" />
+                <h4 className="text-2xl font-black mb-4 tracking-tighter">Placement Guaranteed.</h4>
+                <p className="text-slate-400 font-medium text-sm leading-relaxed opacity-80">
+                  We partner with top global schools to ensure our graduates find high-paying roles immediately after certification.
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Right Content - Enrollment Form */}
+            <div className="lg:col-span-8">
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-6 py-10 sm:p-12 lg:p-20 shadow-2xl shadow-slate-900/5 border border-slate-100 relative">
+                   <div className="absolute -top-6 sm:-top-10 -right-6 sm:-right-10 w-32 sm:w-40 h-32 sm:h-40 bg-blue-600 opacity-[0.03] rounded-full blur-3xl pointer-events-none" />
+                   <EnrollmentForm />
                 </div>
-                <span className="font-bold text-lg">Educators Point</span>
-              </div>
-              <p className="text-[#D1D5DB]">
-                {t('footer.tagline')}
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-bold mb-4">{t('footer.links')}</h4>
-              <ul className="space-y-2 text-[#D1D5DB]">
-                <li><a href="/" className="hover:text-white transition-colors duration-300">{t('nav.about')}</a></li>
-                <li><a href="/#courses" className="hover:text-white transition-colors duration-300">{t('nav.courses')}</a></li>
-                <li><a href="/#experts" className="hover:text-white transition-colors duration-300">{t('nav.experts')}</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold mb-4">{t('footer.support')}</h4>
-              <ul className="space-y-2 text-[#D1D5DB]">
-                <li><a href="#" className="hover:text-white transition-colors duration-300">FAQ</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Privacy Policy</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold mb-4">{t('footer.social')}</h4>
-              <div className="flex gap-4">
-                <a href="#" className="text-[#D1D5DB] hover:text-white transition-colors duration-300 hover:scale-110 transform">
-                  <span className="text-2xl">f</span>
-                </a>
-                <a href="#" className="text-[#D1D5DB] hover:text-white transition-colors duration-300 hover:scale-110 transform">
-                  <span className="text-2xl">in</span>
-                </a>
-                <a href="#" className="text-[#D1D5DB] hover:text-white transition-colors duration-300 hover:scale-110 transform">
-                  <span className="text-2xl">yt</span>
-                </a>
-              </div>
+              </motion.div>
             </div>
           </div>
+        </div>
+      </main>
 
-          <div className="border-t border-[#374151] pt-8 text-center text-[#D1D5DB]">
-            <p>{t('footer.copyright')}</p>
-          </div>
+      {/* Modern Footer Section */}
+      <footer className="bg-white border-t border-slate-100 py-20 mt-40">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400">
+             &copy; 2026 Educators Point Institute. All Rights Reserved.
+          </p>
         </div>
       </footer>
-
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slide-in-left {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-
-        .animate-slide-in-left {
-          animation: slide-in-left 0.8s ease-out forwards;
-          opacity: 0;
-        }
-      `}</style>
     </div>
   );
 }

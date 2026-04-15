@@ -8,9 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Calendar, Plus, Edit2, Trash2, Clock, MapPin } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import AdminLayout from "@/components/AdminLayout";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminCalendar() {
-  const { user } = useAuth();
   interface Event {
     id: number;
     title: string;
@@ -67,18 +68,6 @@ export default function AdminCalendar() {
     description: "",
   });
 
-  // Check if user is admin
-  if (user?.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 max-w-md">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-          <p className="text-gray-600">You do not have permission to access the admin panel.</p>
-        </Card>
-      </div>
-    );
-  }
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -131,20 +120,32 @@ export default function AdminCalendar() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-      <div className="max-w-6xl mx-auto">
+    <AdminLayout userName="Admin User" userEmail="admin@educatorspoint.com">
+      <motion.div 
+        className="max-w-6xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <motion.div 
+          className="mb-8 flex justify-between items-center"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Calendar & Events</h1>
-            <p className="text-gray-600">Manage batches, webinars, and training schedules</p>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">Calendar & Events</h1>
+            <p className="text-slate-600 text-lg">Manage batches, webinars, and training schedules</p>
           </div>
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button onClick={handleNewEvent} className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" />
-                New Event
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button onClick={handleNewEvent} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30 rounded-xl">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Event
+                </Button>
+              </motion.div>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
@@ -229,46 +230,54 @@ export default function AdminCalendar() {
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
+                  <Button onClick={handleSave} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg rounded-xl">
                     {editingId ? "Update Event" : "Create Event"}
                   </Button>
-                  <Button onClick={() => setIsOpen(false)} variant="outline">
+                  <Button onClick={() => setIsOpen(false)} variant="outline" className="rounded-xl">
                     Cancel
                   </Button>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
-        </div>
+        </motion.div>
 
         {/* Events List */}
         <div className="space-y-4">
-          {events.map(event => (
-            <Card key={event.id} className="p-6 hover:shadow-lg transition-shadow">
+          <AnimatePresence>
+          {events.map((event, index) => (
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ delay: index * 0.1 }}
+            >
+            <Card className="group p-6 backdrop-blur-xl bg-white/70 border border-white/40 hover:bg-white/90 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-0.5 rounded-2xl">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <Calendar className="w-5 h-5 text-blue-600" />
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-2xl shadow-lg">
+                      <Calendar className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
-                      <p className="text-sm text-gray-500 capitalize">{event.type}</p>
+                      <h3 className="text-2xl font-bold text-slate-800">{event.title}</h3>
+                      <p className="text-sm text-slate-500 capitalize mt-1 bg-slate-100 px-3 py-1 rounded-full inline-block">{event.type}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    <div className="flex items-center text-gray-600">
-                      <Clock className="w-4 h-4 mr-2" />
-                      <span className="text-sm">
+                    <div className="flex items-center text-slate-600 bg-gradient-to-r from-slate-50 to-blue-50 px-4 py-2 rounded-xl">
+                      <Clock className="w-4 h-4 mr-2 text-blue-500" />
+                      <span className="text-sm font-medium">
                         {event.startDate} to {event.endDate}
                       </span>
                     </div>
-                    <div className="flex items-center text-gray-600">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      <span className="text-sm">{event.location}</span>
+                    <div className="flex items-center text-slate-600 bg-gradient-to-r from-slate-50 to-blue-50 px-4 py-2 rounded-xl">
+                      <MapPin className="w-4 h-4 mr-2 text-blue-500" />
+                      <span className="text-sm font-medium">{event.location}</span>
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-slate-600 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-2 rounded-xl font-semibold">
                       {event.enrolled}/{event.capacity} Enrolled
                     </div>
                   </div>
@@ -279,6 +288,7 @@ export default function AdminCalendar() {
                     onClick={() => handleEdit(event)}
                     variant="outline"
                     size="sm"
+                    className="border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 shadow-md rounded-xl"
                   >
                     <Edit2 className="w-4 h-4" />
                   </Button>
@@ -286,16 +296,18 @@ export default function AdminCalendar() {
                     onClick={() => handleDelete(event.id)}
                     variant="outline"
                     size="sm"
-                    className="text-red-600 hover:text-red-700"
+                    className="text-red-600 hover:text-red-700 border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 shadow-md rounded-xl"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
             </Card>
+            </motion.div>
           ))}
+          </AnimatePresence>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </AdminLayout>
   );
 }

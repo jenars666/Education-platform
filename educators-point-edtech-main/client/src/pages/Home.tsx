@@ -227,7 +227,7 @@ export default function Home() {
             {/* Right Image */}
             <div className="fade-in animate-slide-in-right order-2 md:order-2" style={{ animationDelay: '0.2s' }}>
               <div className="rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 w-full h-auto min-h-[400px]">
-                <img 
+                <img
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/hero-classroom-diverse-654QZp8x4A7PBCkHcxiyut.webp"
                   alt="Diverse teachers collaborating in modern classroom"
                   loading="lazy"
@@ -281,19 +281,19 @@ export default function Home() {
               const IconComponent = module.icon;
               const isHovered = hoveredModule === index;
               return (
-                <Card 
-                  key={index} 
+                <Card
+                  key={index}
                   className="p-8 border border-[#E0E7FF] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer group min-h-[280px] flex flex-col"
                   onMouseEnter={() => setHoveredModule(index)}
                   onMouseLeave={() => setHoveredModule(null)}
                 >
                   <div className="flex gap-4 mb-6">
-                    <div 
+                    <div
                       className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-all duration-500 shadow-md"
                       style={{ backgroundColor: module.lightColor }}
                     >
-                      <IconComponent 
-                        size={32} 
+                      <IconComponent
+                        size={32}
                         style={{ color: module.color }}
                         className="group-hover:rotate-12 transition-transform duration-500"
                       />
@@ -355,7 +355,7 @@ export default function Home() {
             ].map((expert, idx) => (
               <Card key={idx} className="p-6 text-center overflow-hidden hover:shadow-2xl transition-all duration-500 border border-[#E0E7FF] transform hover:-translate-y-4 group cursor-pointer">
                 <div className="mb-6 relative">
-                  <img 
+                  <img
                     src={expert.img}
                     alt="Expert mentor"
                     className="w-32 h-32 rounded-full mx-auto object-cover border-4 transition-all duration-500 group-hover:scale-110 group-hover:border-[#2563EB]"
@@ -408,8 +408,8 @@ export default function Home() {
           <p className="text-xl text-[#E0E7FF] mb-8 max-w-2xl mx-auto animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
             {t('cta.subtitle')}
           </p>
-          <Button 
-            className="bg-white hover:bg-[#F0F9FF] text-[#2563EB] text-lg px-12 py-6 h-auto rounded-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 animate-slide-in-left" 
+          <Button
+            className="bg-white hover:bg-[#F0F9FF] text-[#2563EB] text-lg px-12 py-6 h-auto rounded-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 animate-slide-in-left"
             style={{ animationDelay: '0.2s' }}
             onClick={() => window.location.href = '/enroll'}
           >

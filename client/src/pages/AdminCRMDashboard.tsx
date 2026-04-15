@@ -7,6 +7,8 @@ import { Users, TrendingUp, Target, Phone, Mail, Trash2, Eye, Loader2 } from "lu
 import { useState } from "react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import AdminLayout from "@/components/AdminLayout";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Lead {
   id: number;
@@ -21,7 +23,6 @@ interface Lead {
 }
 
 export default function AdminCRMDashboard() {
-  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -52,17 +53,6 @@ export default function AdminCRMDashboard() {
       toast.error(error.message || "Failed to update lead");
     },
   });
-
-  if (user?.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 max-w-md">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-          <p className="text-gray-600">You do not have permission to access the admin panel.</p>
-        </Card>
-      </div>
-    );
-  }
 
   const statCards = [
     { icon: Users, label: "Total Leads", value: stats?.totalLeads || 0, change: "+5 this week" },
@@ -103,30 +93,42 @@ export default function AdminCRMDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">CRM Lead Dashboard</h1>
-          <p className="text-gray-600">Manage and track potential students</p>
-        </div>
+    <AdminLayout userName="Admin User" userEmail="admin@educatorspoint.com">
+      <motion.div 
+        className="max-w-7xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div 
+          className="mb-8"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">CRM Lead Dashboard</h1>
+          <p className="text-slate-600 text-lg">Manage and track potential students</p>
+        </motion.div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {statCards.map((stat, idx) => {
             const Icon = stat.icon;
             return (
-              <Card key={idx} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-600 text-sm font-medium">{stat.label}</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                    <p className="text-green-600 text-sm mt-1">{stat.change}</p>
+              <motion.div key={idx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
+                <Card className="group p-6 backdrop-blur-xl bg-white/70 border border-white/40 hover:bg-white/90 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-slate-500 text-sm font-medium mb-2">{stat.label}</p>
+                      <p className="text-4xl font-bold bg-gradient-to-br from-slate-800 to-slate-600 bg-clip-text text-transparent">{stat.value}</p>
+                      <p className="text-emerald-600 text-sm mt-2 font-semibold">{stat.change}</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Icon className="w-7 h-7 text-blue-600" />
+                    </div>
                   </div>
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <Icon className="w-6 h-6 text-blue-600" />
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             );
           })}
         </div>
@@ -137,10 +139,10 @@ export default function AdminCRMDashboard() {
             placeholder="Search by name or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 min-w-64"
+            className="flex-1 min-w-64 backdrop-blur-xl bg-white/70 border-white/40 shadow-lg rounded-xl"
           />
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40 backdrop-blur-xl bg-white/70 border-white/40 shadow-lg rounded-xl">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -156,7 +158,8 @@ export default function AdminCRMDashboard() {
         </div>
 
         {/* Leads Table */}
-        <Card className="overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <Card className="overflow-hidden backdrop-blur-xl bg-white/70 border border-white/40 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-500">
           {leadsLoading ? (
             <div className="flex items-center justify-center p-8">
               <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
@@ -164,55 +167,55 @@ export default function AdminCRMDashboard() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Contact</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Source</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Score</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">Name</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">Contact</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">Source</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">Score</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredLeads.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                      <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
                         No leads found
                       </td>
                     </tr>
                   ) : (
                     filteredLeads.map(lead => (
-                      <tr key={lead.id} className="border-b hover:bg-gray-50 transition-colors">
+                      <tr key={lead.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200">
                         <td className="px-6 py-4">
                           <div>
-                            <p className="font-medium text-gray-900">{lead.firstName} {lead.lastName || ""}</p>
-                            <p className="text-sm text-gray-500">{new Date(lead.createdAt).toLocaleDateString()}</p>
+                            <p className="font-semibold text-slate-800">{lead.firstName} {lead.lastName || ""}</p>
+                            <p className="text-sm text-slate-500 mt-0.5">{new Date(lead.createdAt).toLocaleDateString()}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="space-y-1">
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Mail className="w-4 h-4 mr-2" />
+                            <div className="flex items-center text-sm text-slate-600">
+                              <Mail className="w-4 h-4 mr-2 text-blue-500" />
                               {lead.email}
                             </div>
                             {lead.phone && (
-                              <div className="flex items-center text-sm text-gray-600">
-                                <Phone className="w-4 h-4 mr-2" />
+                              <div className="flex items-center text-sm text-slate-600">
+                                <Phone className="w-4 h-4 mr-2 text-blue-500" />
                                 {lead.phone}
                               </div>
                             )}
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm font-medium text-gray-700 capitalize">{lead.source}</span>
+                          <span className="text-sm font-medium text-slate-700 capitalize bg-slate-100 px-3 py-1 rounded-full">{lead.source}</span>
                         </td>
                         <td className="px-6 py-4">
                           <Select 
                             value={lead.status} 
                             onValueChange={(newStatus) => handleStatusChange(lead.id, newStatus)}
                           >
-                            <SelectTrigger className={`w-32 ${getStatusColor(lead.status)}`}>
+                            <SelectTrigger className={`w-32 rounded-xl shadow-md ${getStatusColor(lead.status)}`}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -227,25 +230,25 @@ export default function AdminCRMDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center">
-                            <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="w-full bg-slate-200 rounded-full h-2.5">
                               <div
-                                className="bg-blue-600 h-2 rounded-full"
+                                className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2.5 rounded-full transition-all duration-300"
                                 style={{ width: `${lead.leadScore}%` }}
                               />
                             </div>
-                            <span className="ml-2 text-sm font-medium text-gray-900">{lead.leadScore}</span>
+                            <span className="ml-3 text-sm font-bold text-slate-800">{lead.leadScore}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" disabled>
+                            <Button variant="outline" size="sm" disabled className="rounded-xl shadow-md">
                               <Eye className="w-4 h-4" />
                             </Button>
                             <Button
                               onClick={() => handleDelete(lead.id)}
                               variant="outline"
                               size="sm"
-                              className="text-red-600 hover:text-red-700"
+                              className="text-red-600 hover:text-red-700 border-red-200 bg-red-50 hover:bg-red-100 rounded-xl shadow-md"
                               disabled={deleteLead.isPending}
                             >
                               <Trash2 className="w-4 h-4" />
@@ -260,7 +263,8 @@ export default function AdminCRMDashboard() {
             </div>
           )}
         </Card>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AdminLayout>
   );
 }

@@ -29,10 +29,10 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
-  
+
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  
+
   // tRPC API
   app.use(
     "/api/trpc",
@@ -41,7 +41,7 @@ async function startServer() {
       createContext,
     })
   );
-  
+
   // Vite dev server or static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
