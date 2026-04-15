@@ -1,56 +1,41 @@
 import { z } from "zod";
-import { adminProcedure, router } from "../_core/trpc";
-import { getDb } from "../db";
-import { 
-  cmsContent, 
-  analyticsEvents, 
-  calendarEvents, 
-  crmLeads, 
-  leadInteractions,
-  enrollments 
-} from "../../drizzle/schema";
-import { eq, desc, and, gte, lte, SQL } from "drizzle-orm";
+import { adminProcedure, publicProcedure, router } from "../_core/trpc";
+import { supabase } from "../supabase";
 
 /**
  * CMS Content Management Router
  */
 export const cmsRouter = router({
-  // Get all CMS content with optional filtering
   getAll: adminProcedure
     .input(z.object({ contentType: z.string().optional() }).optional())
-    .query(async ({ input, ctx }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+    .query(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
 
-      const conditions = [];
+      let query = supabase.from('cms_content').select('*');
       if (input?.contentType) {
-        conditions.push(eq(cmsContent.contentType, input.contentType));
+        query = query.eq('content_type', input.contentType);
       }
       
-      let query = db.select().from(cmsContent) as any;
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
-      }
-      return await query.orderBy(desc(cmsContent.updatedAt));
+      const { data, error } = await query.order('updated_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
     }),
 
-  // Get single content item
   getById: adminProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const result = await db
-        .select()
-        .from(cmsContent)
-        .where(eq(cmsContent.id, input.id))
-        .limit(1);
+      const { data, error } = await supabase
+        .from('cms_content')
+        .select('*')
+        .eq('id', input.id)
+        .single();
 
-      return result[0] || null;
+      if (error) throw error;
+      return data;
     }),
 
-  // Create new content
   create: adminProcedure
     .input(z.object({
       contentType: z.string(),
@@ -59,22 +44,28 @@ export const cmsRouter = router({
       description: z.string().optional(),
       content: z.string().optional(),
       imageUrl: z.string().optional(),
-      metadata: z.string().optional(),
+      metadata: z.any().optional(),
       status: z.enum(["draft", "published"]).default("draft"),
     }))
     .mutation(async ({ input, ctx }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const result = await db.insert(cmsContent).values({
-        ...input,
-        createdBy: ctx.user?.id || 1,
-      });
+      const { data, error } = await supabase.from('cms_content').insert({
+        content_type: input.contentType,
+        content_key: input.contentKey,
+        title: input.title,
+        description: input.description,
+        content: input.content,
+        image_url: input.imageUrl,
+        metadata: input.metadata,
+        status: input.status,
+        created_by: ctx.user?.id || '',
+      }).select().single();
 
-      return { id: result[0].insertId, ...input };
+      if (error) throw error;
+      return data;
     }),
 
-  // Update content
   update: adminProcedure
     .input(z.object({
       id: z.number(),
@@ -82,42 +73,55 @@ export const cmsRouter = router({
       description: z.string().optional(),
       content: z.string().optional(),
       imageUrl: z.string().optional(),
-      metadata: z.string().optional(),
+      metadata: z.any().optional(),
       status: z.enum(["draft", "published"]).optional(),
     }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
       const { id, ...updates } = input;
-      await db.update(cmsContent).set(updates).where(eq(cmsContent.id, id));
+      const updateData: any = {};
+      if (updates.title) updateData.title = updates.title;
+      if (updates.description) updateData.description = updates.description;
+      if (updates.content) updateData.content = updates.content;
+      if (updates.imageUrl) updateData.image_url = updates.imageUrl;
+      if (updates.metadata) updateData.metadata = updates.metadata;
+      if (updates.status) updateData.status = updates.status;
 
+      const { error } = await supabase
+        .from('cms_content')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
       return { success: true };
     }),
 
-  // Delete content
   delete: adminProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      await db.delete(cmsContent).where(eq(cmsContent.id, input.id));
+      const { error } = await supabase
+        .from('cms_content')
+        .delete()
+        .eq('id', input.id);
+
+      if (error) throw error;
       return { success: true };
     }),
 
-  // Publish content
   publish: adminProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      await db
-        .update(cmsContent)
-        .set({ status: "published" })
-        .where(eq(cmsContent.id, input.id));
+      const { error } = await supabase
+        .from('cms_content')
+        .update({ status: 'published' })
+        .eq('id', input.id);
 
+      if (error) throw error;
       return { success: true };
     }),
 });
@@ -126,7 +130,6 @@ export const cmsRouter = router({
  * Analytics Router
  */
 export const analyticsRouter = router({
-  // Track event
   trackEvent: adminProcedure
     .input(z.object({
       eventType: z.string(),
@@ -134,46 +137,49 @@ export const analyticsRouter = router({
       sessionId: z.string(),
       pageUrl: z.string().optional(),
       referrer: z.string().optional(),
-      metadata: z.string().optional(),
+      metadata: z.any().optional(),
     }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      await db.insert(analyticsEvents).values(input);
+      const { error } = await supabase.from('analytics_events').insert({
+        event_type: input.eventType,
+        event_name: input.eventName,
+        session_id: input.sessionId,
+        page_url: input.pageUrl,
+        referrer: input.referrer,
+        metadata: input.metadata,
+      });
+
+      if (error) throw error;
       return { success: true };
     }),
 
-  // Get analytics summary
   getSummary: adminProcedure
     .input(z.object({
       startDate: z.date().optional(),
       endDate: z.date().optional(),
     }).optional())
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      let query = db.select().from(analyticsEvents) as any;
+      let query = supabase.from('analytics_events').select('*');
 
       if (input?.startDate && input?.endDate) {
-        query = query.where(
-          and(
-            gte(analyticsEvents.timestamp, input.startDate),
-            lte(analyticsEvents.timestamp, input.endDate)
-          )
-        );
+        query = query
+          .gte('timestamp', input.startDate.toISOString())
+          .lte('timestamp', input.endDate.toISOString());
       }
 
-      const events = await query;
+      const { data: events, error } = await query;
+      if (error) throw error;
 
-      // Calculate summary stats
-      const pageViews = events.filter((e: any) => e.eventType === "page_view").length;
-      const ctaClicks = events.filter((e: any) => e.eventType === "cta_click").length;
-      const formSubmits = events.filter((e: any) => e.eventType === "form_submit").length;
+      const pageViews = events?.filter(e => e.event_type === 'page_view').length || 0;
+      const ctaClicks = events?.filter(e => e.event_type === 'cta_click').length || 0;
+      const formSubmits = events?.filter(e => e.event_type === 'form_submit').length || 0;
 
       return {
-        totalEvents: events.length,
+        totalEvents: events?.length || 0,
         pageViews,
         ctaClicks,
         formSubmits,
@@ -181,22 +187,23 @@ export const analyticsRouter = router({
       };
     }),
 
-  // Get events by type
   getEventsByType: adminProcedure
     .input(z.object({
       eventType: z.string(),
       limit: z.number().default(100),
     }))
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      return await (db
-        .select()
-        .from(analyticsEvents)
-        .where(eq(analyticsEvents.eventType, input.eventType))
-        .orderBy(desc(analyticsEvents.timestamp))
-        .limit(input.limit) as any);
+      const { data, error } = await supabase
+        .from('analytics_events')
+        .select('*')
+        .eq('event_type', input.eventType)
+        .order('timestamp', { ascending: false })
+        .limit(input.limit);
+
+      if (error) throw error;
+      return data || [];
     }),
 });
 
@@ -204,40 +211,37 @@ export const analyticsRouter = router({
  * Calendar Router
  */
 export const calendarRouter = router({
-  // Get all events
   getAll: adminProcedure.query(async () => {
-    const db = await getDb();
-    if (!db) throw new Error("Database not available");
+    if (!supabase) throw new Error("Database not available");
 
-    return await db
-      .select()
-      .from(calendarEvents)
-      .orderBy(desc(calendarEvents.startDate));
+    const { data, error } = await supabase
+      .from('calendar_events')
+      .select('*')
+      .order('start_date', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   }),
 
-  // Get events by date range
   getByDateRange: adminProcedure
     .input(z.object({
       startDate: z.date(),
       endDate: z.date(),
     }))
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      return await db
-        .select()
-        .from(calendarEvents)
-        .where(
-          and(
-            gte(calendarEvents.startDate, input.startDate),
-            lte(calendarEvents.endDate, input.endDate)
-          )
-        )
-        .orderBy(calendarEvents.startDate);
+      const { data, error } = await supabase
+        .from('calendar_events')
+        .select('*')
+        .gte('start_date', input.startDate.toISOString())
+        .lte('end_date', input.endDate.toISOString())
+        .order('start_date', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
     }),
 
-  // Create event
   create: adminProcedure
     .input(z.object({
       eventType: z.string(),
@@ -248,21 +252,28 @@ export const calendarRouter = router({
       location: z.string().optional(),
       instructorId: z.number().optional(),
       maxCapacity: z.number().optional(),
-      metadata: z.string().optional(),
+      metadata: z.any().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const result = await db.insert(calendarEvents).values({
-        ...input,
-        createdBy: ctx.user?.id || 1,
-      });
+      const { data, error } = await supabase.from('calendar_events').insert({
+        event_type: input.eventType,
+        title: input.title,
+        description: input.description,
+        start_date: input.startDate.toISOString(),
+        end_date: input.endDate.toISOString(),
+        location: input.location,
+        instructor_id: input.instructorId,
+        max_capacity: input.maxCapacity,
+        metadata: input.metadata,
+        created_by: ctx.user?.id || '',
+      }).select().single();
 
-      return { id: result[0].insertId, ...input };
+      if (error) throw error;
+      return data;
     }),
 
-  // Update event
   update: adminProcedure
     .input(z.object({
       id: z.number(),
@@ -274,23 +285,37 @@ export const calendarRouter = router({
       status: z.enum(["scheduled", "ongoing", "completed", "cancelled"]).optional(),
     }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
       const { id, ...updates } = input;
-      await db.update(calendarEvents).set(updates).where(eq(calendarEvents.id, id));
+      const updateData: any = {};
+      if (updates.title) updateData.title = updates.title;
+      if (updates.description) updateData.description = updates.description;
+      if (updates.startDate) updateData.start_date = updates.startDate.toISOString();
+      if (updates.endDate) updateData.end_date = updates.endDate.toISOString();
+      if (updates.location) updateData.location = updates.location;
+      if (updates.status) updateData.status = updates.status;
 
+      const { error } = await supabase
+        .from('calendar_events')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
       return { success: true };
     }),
 
-  // Delete event
   delete: adminProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      await db.delete(calendarEvents).where(eq(calendarEvents.id, input.id));
+      const { error } = await supabase
+        .from('calendar_events')
+        .delete()
+        .eq('id', input.id);
+
+      if (error) throw error;
       return { success: true };
     }),
 });
@@ -299,57 +324,52 @@ export const calendarRouter = router({
  * CRM Router
  */
 export const crmRouter = router({
-  // Get all leads
   getAll: adminProcedure
     .input(z.object({
       status: z.string().optional(),
       source: z.string().optional(),
     }).optional())
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const conditions = [];
+      let query = supabase.from('crm_leads').select('*');
+      
       if (input?.status) {
-        conditions.push(eq(crmLeads.status, input.status as any));
+        query = query.eq('status', input.status);
       }
       if (input?.source) {
-        conditions.push(eq(crmLeads.source, input.source));
+        query = query.eq('source', input.source);
       }
 
-      let query = db.select().from(crmLeads) as any;
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
-      }
-
-      return await query.orderBy(desc(crmLeads.createdAt));
+      const { data, error } = await query.order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
     }),
 
-  // Get lead by ID with interactions
   getById: adminProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const lead = await db
-        .select()
-        .from(crmLeads)
-        .where(eq(crmLeads.id, input.id))
-        .limit(1);
+      const { data: lead, error: leadError } = await supabase
+        .from('crm_leads')
+        .select('*')
+        .eq('id', input.id)
+        .single();
 
-      if (!lead.length) return null;
+      if (leadError) throw leadError;
 
-      const interactions = await db
-        .select()
-        .from(leadInteractions)
-        .where(eq(leadInteractions.leadId, input.id))
-        .orderBy(desc(leadInteractions.createdAt));
+      const { data: interactions, error: intError } = await supabase
+        .from('lead_interactions')
+        .select('*')
+        .eq('lead_id', input.id)
+        .order('created_at', { ascending: false });
 
-      return { ...lead[0], interactions };
+      if (intError) throw intError;
+
+      return { ...lead, interactions: interactions || [] };
     }),
 
-  // Create lead
   create: adminProcedure
     .input(z.object({
       firstName: z.string(),
@@ -360,17 +380,27 @@ export const crmRouter = router({
       status: z.enum(["new", "contacted", "interested", "qualified", "enrolled", "rejected"]).default("new"),
       leadScore: z.number().default(0),
       notes: z.string().optional(),
-      metadata: z.string().optional(),
+      metadata: z.any().optional(),
     }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const result = await db.insert(crmLeads).values(input);
-      return { id: result[0].insertId, ...input };
+      const { data, error } = await supabase.from('crm_leads').insert({
+        first_name: input.firstName,
+        last_name: input.lastName,
+        email: input.email,
+        phone: input.phone,
+        source: input.source,
+        status: input.status,
+        lead_score: input.leadScore,
+        notes: input.notes,
+        metadata: input.metadata,
+      }).select().single();
+
+      if (error) throw error;
+      return data;
     }),
 
-  // Update lead
   update: adminProcedure
     .input(z.object({
       id: z.number(),
@@ -383,27 +413,41 @@ export const crmRouter = router({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
       const { id, ...updates } = input;
-      await db.update(crmLeads).set(updates).where(eq(crmLeads.id, id));
+      const updateData: any = {};
+      if (updates.firstName) updateData.first_name = updates.firstName;
+      if (updates.lastName) updateData.last_name = updates.lastName;
+      if (updates.email) updateData.email = updates.email;
+      if (updates.phone) updateData.phone = updates.phone;
+      if (updates.status) updateData.status = updates.status;
+      if (updates.leadScore !== undefined) updateData.lead_score = updates.leadScore;
+      if (updates.notes) updateData.notes = updates.notes;
 
+      const { error } = await supabase
+        .from('crm_leads')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
       return { success: true };
     }),
 
-  // Delete lead
   delete: adminProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      await db.delete(crmLeads).where(eq(crmLeads.id, input.id));
+      const { error } = await supabase
+        .from('crm_leads')
+        .delete()
+        .eq('id', input.id);
+
+      if (error) throw error;
       return { success: true };
     }),
 
-  // Add interaction
   addInteraction: adminProcedure
     .input(z.object({
       leadId: z.number(),
@@ -413,28 +457,35 @@ export const crmRouter = router({
       status: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const result = await db.insert(leadInteractions).values({
-        ...input,
-        createdBy: ctx.user?.id || 1,
-      });
+      const { data, error } = await supabase.from('lead_interactions').insert({
+        lead_id: input.leadId,
+        interaction_type: input.interactionType,
+        subject: input.subject,
+        message: input.message,
+        status: input.status,
+        created_by: ctx.user?.id || null,
+      }).select().single();
 
-      return { id: result[0].insertId, ...input };
+      if (error) throw error;
+      return data;
     }),
 
-  // Get lead statistics
   getStats: adminProcedure.query(async () => {
-    const db = await getDb();
-    if (!db) throw new Error("Database not available");
+    if (!supabase) throw new Error("Database not available");
 
-    const leads = await (db.select() as any).from(crmLeads);
-    const totalLeads = leads.length;
-    const qualifiedLeads = leads.filter((l: any) => l.status === "qualified").length;
-    const enrolledLeads = leads.filter((l: any) => l.status === "enrolled").length;
-    const avgLeadScore = leads.length > 0
-      ? Math.round(leads.reduce((sum: number, l: any) => sum + l.leadScore, 0) / leads.length)
+    const { data: leads, error } = await supabase
+      .from('crm_leads')
+      .select('status, lead_score');
+
+    if (error) throw error;
+
+    const totalLeads = leads?.length || 0;
+    const qualifiedLeads = leads?.filter(l => l.status === 'qualified').length || 0;
+    const enrolledLeads = leads?.filter(l => l.status === 'enrolled').length || 0;
+    const avgLeadScore = totalLeads > 0
+      ? Math.round(leads!.reduce((sum, l) => sum + l.lead_score, 0) / totalLeads)
       : 0;
 
     return {
@@ -448,51 +499,50 @@ export const crmRouter = router({
 });
 
 /**
- * Enrollment Router for tracking enrollments and linking to CRM
+ * Enrollment Router
  */
 export const enrollmentRouter = router({
-  // Get all enrollments
-  getAll: adminProcedure.query(async () => {
-    const db = await getDb();
-    if (!db) throw new Error("Database not available");
+  getAll: publicProcedure.query(async () => {
+    if (!supabase) throw new Error("Database not available");
 
-    return await db
-      .select()
-      .from(enrollments)
-      .orderBy(desc(enrollments.createdAt));
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   }),
 
-  // Get enrollment by ID
   getById: adminProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      const result = await db
-        .select()
-        .from(enrollments)
-        .where(eq(enrollments.id, input.id))
-        .limit(1);
+      const { data, error } = await supabase
+        .from('enrollments')
+        .select('*')
+        .eq('id', input.id)
+        .single();
 
-      return result[0] || null;
+      if (error) throw error;
+      return data;
     }),
 
-  // Update enrollment status
   updateStatus: adminProcedure
     .input(z.object({
       id: z.number(),
       status: z.enum(["pending", "confirmed", "completed", "cancelled"]),
     }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
+      if (!supabase) throw new Error("Database not available");
 
-      await db
-        .update(enrollments)
-        .set({ status: input.status })
-        .where(eq(enrollments.id, input.id));
+      const { error } = await supabase
+        .from('enrollments')
+        .update({ status: input.status })
+        .eq('id', input.id);
 
+      if (error) throw error;
       return { success: true };
     }),
 });
