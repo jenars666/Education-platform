@@ -350,7 +350,7 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { name: t('expert.1.name'), title: t('expert.1.title'), desc: t('expert.1.desc'), tag1: t('expert.1.tag1'), tag2: t('expert.1.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-priya-deKLhh2uDffoEnMdHFMUMr.webp', color: '#2563EB' },
-              { name: t('expert.2.name'), title: t('expert.2.title'), desc: t('expert.2.desc'), tag1: t('expert.2.tag1'), tag2: t('expert.2.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-rajesh-FQKhR6cB2nRqdVZ6mPUnw9.webp', color: '#1E40AF' },
+              { name: 'Gajesh Kumar', title: t('expert.2.title'), desc: t('expert.2.desc'), tag1: t('expert.2.tag1'), tag2: t('expert.2.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-rajesh-FQKhR6cB2nRqdVZ6mPUnw9.webp', color: '#1E40AF' },
               { name: t('expert.3.name'), title: t('expert.3.title'), desc: t('expert.3.desc'), tag1: t('expert.3.tag1'), tag2: t('expert.3.tag2'), img: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663485929038/o7TmuGWsZAQSnDyrQtK4Dx/expert-mentor-anjali-6BhRb2WwQUnXNSKjUiJ7fd.webp', color: '#3B82F6' }
             ].map((expert, idx) => (
               <Card key={idx} className="p-6 text-center overflow-hidden hover:shadow-2xl transition-all duration-500 border border-[#E0E7FF] transform hover:-translate-y-4 group cursor-pointer">
