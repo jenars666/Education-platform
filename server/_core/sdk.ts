@@ -30,10 +30,18 @@ const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserI
 
 class OAuthService {
   constructor(private client: ReturnType<typeof axios.create>) {
-    console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
+    console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl || "(not set)");
     if (!ENV.oAuthServerUrl) {
-      console.error(
-        "[OAuth] ERROR: OAUTH_SERVER_URL is not configured! Set OAUTH_SERVER_URL environment variable."
+      console.warn(
+        "[OAuth] OAUTH_SERVER_URL not set. Falling back to VITE_OAUTH_PORTAL_URL when available."
+      );
+    }
+  }
+
+  private ensureConfigured() {
+    if (!ENV.oAuthServerUrl) {
+      throw new Error(
+        "OAuth server is not configured. Set OAUTH_SERVER_URL or VITE_OAUTH_PORTAL_URL in environment variables."
       );
     }
   }
@@ -47,6 +55,7 @@ class OAuthService {
     code: string,
     state: string
   ): Promise<ExchangeTokenResponse> {
+    this.ensureConfigured();
     const payload: ExchangeTokenRequest = {
       clientId: ENV.appId,
       grantType: "authorization_code",
@@ -65,6 +74,7 @@ class OAuthService {
   async getUserInfoByToken(
     token: ExchangeTokenResponse
   ): Promise<GetUserInfoResponse> {
+    this.ensureConfigured();
     const { data } = await this.client.post<GetUserInfoResponse>(
       GET_USER_INFO_PATH,
       {
