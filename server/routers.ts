@@ -1,21 +1,16 @@
-import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { cmsRouter, analyticsRouter, calendarRouter, crmRouter, enrollmentRouter } from "./routers/admin";
-
-const COOKIE_NAME = "session";
+import { z } from "zod";
+import { supabase } from "./supabase";
 
 export const appRouter = router({
-  // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+    logout: publicProcedure.mutation(async () => {
+      // Supabase handles logout on client side
+      return { success: true } as const;
     }),
   }),
 
@@ -25,6 +20,139 @@ export const appRouter = router({
   calendar: calendarRouter,
   crm: crmRouter,
   enrollment: enrollmentRouter,
+
+  // Public enrollment submission
+  enrollmentPublic: router({
+    create: publicProcedure
+      .input(
+        z.object({
+          name: z.string().min(2).max(255),
+          email: z.string().email().max(320),
+          mobileNo: z.string().regex(/^[0-9]{10}$/),
+          gender: z.string().nullable(),
+          dateOfBirth: z.string().min(1).max(20),
+          state: z.string().min(2).max(120),
+          district: z.string().min(2).max(120),
+          area: z.string().min(2).max(120),
+          currentStatus: z.string().min(2).max(120),
+
+          course: z.string().nullable(),
+          specialization: z.string().nullable(),
+          collegeName: z.string().nullable(),
+          university: z.string().nullable(),
+          yearOfStudy: z.string().nullable(),
+
+          degreeCompleted: z.string().nullable(),
+          subjectMajor: z.string().nullable(),
+          yearOfGraduation: z.string().nullable(),
+          interestedInTeaching: z.string().nullable(),
+
+          teachingLevel: z.string().nullable(),
+          subjectTeaching: z.string().nullable(),
+          yearsExperience: z.string().nullable(),
+          instituteName: z.string().nullable(),
+
+          joiningReason: z.string().min(2).max(255),
+          preferredTeachingSubject: z.string().trim().min(2).max(255),
+          preferredJobLocation: z.string().trim().min(2).max(255),
+          learningMode: z.string().min(2).max(20),
+
+          skills: z.string().nullable(),
+          languagesKnown: z.string().nullable(),
+          technicalSkills: z.string().nullable(),
+
+          jobAlerts: z.string().nullable(),
+          preferredSalaryRange: z.string().nullable(),
+          teachingConfidence: z.string().min(1).max(5),
+
+          resumeFileName: z.string().nullable(),
+          certificateFileName: z.string().nullable(),
+          batch: z.string().min(1).max(100),
+          batchStartDate: z.string().min(1).max(50),
+          batchEndDate: z.string().min(1).max(50),
+          price: z.number().int().nonnegative(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        if (!supabase) {
+          throw new Error("Database not available");
+        }
+
+        const { data, error } = await supabase
+          .from("enrollments")
+          .insert({
+            name: input.name,
+            email: input.email,
+            mobile_no: input.mobileNo,
+            gender: input.gender,
+            date_of_birth: input.dateOfBirth,
+            state: input.state,
+            district: input.district,
+            place: input.area,
+            current_status: input.currentStatus,
+
+            batch: input.batch,
+            batch_start_date: input.batchStartDate,
+            batch_end_date: input.batchEndDate,
+            price: input.price,
+            status: "pending",
+            email_sent: 0,
+
+            profile_data: {
+              student: {
+                course: input.course,
+                specialization: input.specialization,
+                collegeName: input.collegeName,
+                university: input.university,
+                yearOfStudy: input.yearOfStudy,
+              },
+              graduate: {
+                degreeCompleted: input.degreeCompleted,
+                subjectMajor: input.subjectMajor,
+                yearOfGraduation: input.yearOfGraduation,
+                interestedInTeaching: input.interestedInTeaching,
+              },
+              teacher: {
+                teachingLevel: input.teachingLevel,
+                subjectTeaching: input.subjectTeaching,
+                yearsExperience: input.yearsExperience,
+                instituteName: input.instituteName,
+              },
+              careerGoals: {
+                joiningReason: input.joiningReason,
+                preferredTeachingSubject: input.preferredTeachingSubject,
+                preferredJobLocation: input.preferredJobLocation,
+                learningMode: input.learningMode,
+              },
+              skills: {
+                skills: input.skills,
+                languagesKnown: input.languagesKnown,
+                technicalSkills: input.technicalSkills,
+              },
+              recommendation: {
+                jobAlerts: input.jobAlerts,
+                preferredSalaryRange: input.preferredSalaryRange,
+                teachingConfidence: input.teachingConfidence,
+              },
+              documents: {
+                resumeFileName: input.resumeFileName,
+                certificateFileName: input.certificateFileName,
+              },
+            },
+          })
+          .select("id")
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        return {
+          success: true,
+          enrollmentId: data.id,
+        };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

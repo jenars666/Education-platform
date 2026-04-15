@@ -1,17 +1,44 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Users, BookOpen, MessageSquare, Settings, LogOut, Plus, Edit, Trash2, Eye, EyeOff, Calendar, TrendingUp, FileText } from 'lucide-react';
+import { BarChart3, Users, BookOpen, MessageSquare, Plus, Edit, Trash2, FileText, TrendingUp, Calendar } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { trpc } from '@/lib/trpc';
+import AdminLayout from '@/components/AdminLayout';
+import { supabase } from '@/lib/supabase';
+import { motion } from 'framer-motion';
 
 interface Enrollment {
-  id: string;
+  id: number;
   name: string;
   email: string;
+  mobile_no: string | null;
+  gender: string | null;
+  date_of_birth: string | null;
+  current_status: string | null;
+  state: string | null;
+  district: string | null;
+  place: string | null;
+  profile_data: {
+    recommendation?: {
+      teachingConfidence?: string | null;
+      jobAlerts?: string | null;
+      preferredSalaryRange?: string | null;
+    };
+    careerGoals?: {
+      preferredTeachingSubject?: string | null;
+      preferredJobLocation?: string | null;
+      joiningReason?: string | null;
+      learningMode?: string | null;
+    };
+    skills?: {
+      languagesKnown?: string | null;
+    };
+  } | null;
   batch: string;
-  date: string;
-  status: 'pending' | 'confirmed' | 'completed';
+  created_at: string;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
 }
 
 interface Testimonial {
@@ -34,12 +61,49 @@ interface Mentor {
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([
-    { id: '1', name: 'Rajesh Singh', email: 'rajesh@email.com', batch: 'April 2026', date: '2026-03-28', status: 'confirmed' },
-    { id: '2', name: 'Priya Patel', email: 'priya@email.com', batch: 'May 2026', date: '2026-03-29', status: 'pending' },
-    { id: '3', name: 'Amit Kumar', email: 'amit@email.com', batch: 'June 2026', date: '2026-03-30', status: 'confirmed' },
-  ]);
+  const utils = trpc.useUtils();
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
+
+  const {
+    data: enrollmentData = [],
+    isLoading: isEnrollmentsLoading,
+  } = trpc.enrollment.getAll.useQuery(undefined, {
+    refetchInterval: 3000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+  });
+
+  const enrollments = enrollmentData as Enrollment[];
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-enrollments-live')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'enrollments' },
+        async () => {
+          await utils.enrollment.getAll.invalidate();
+        }
+      )
+      .subscribe((status) => {
+        setIsRealtimeConnected(status === 'SUBSCRIBED');
+        if (status === 'SUBSCRIBED') {
+          void utils.enrollment.getAll.invalidate();
+        }
+      });
+
+    return () => {
+      setIsRealtimeConnected(false);
+      void supabase.removeChannel(channel);
+    };
+  }, [utils]);
+
+  const updateEnrollmentStatus = trpc.enrollment.updateStatus.useMutation({
+    onSuccess: () => {
+      void utils.enrollment.getAll.invalidate();
+    },
+  });
 
   const [testimonials, setTestimonials] = useState<Testimonial[]>([
     { id: '1', name: 'Sarah Johnson', role: 'Secondary Teacher', content: 'This program transformed my teaching approach completely!', rating: 5, image: 'https://via.placeholder.com/100' },
@@ -53,13 +117,16 @@ export default function AdminDashboard() {
 
   const stats = [
     { label: 'Total Enrollments', value: enrollments.length, icon: Users, color: '#2563EB' },
-    { label: 'Confirmed Batches', value: 3, icon: BookOpen, color: '#10B981' },
+    { label: 'Confirmed Batches', value: enrollments.filter((e) => e.status === 'confirmed').length, icon: BookOpen, color: '#10B981' },
     { label: 'Testimonials', value: testimonials.length, icon: MessageSquare, color: '#F59E0B' },
     { label: 'Expert Mentors', value: mentors.length, icon: Users, color: '#8B5CF6' },
   ];
 
-  const handleDeleteEnrollment = (id: string) => {
-    setEnrollments(enrollments.filter(e => e.id !== id));
+  const handleCancelEnrollment = (id: number) => {
+    updateEnrollmentStatus.mutate({
+      id,
+      status: 'cancelled',
+    });
   };
 
   const handleDeleteTestimonial = (id: string) => {
@@ -71,236 +138,77 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <header className="bg-white border-b border-[#E0E7FF] sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#2563EB] to-[#1E40AF] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">EP</span>
-            </div>
-            <div>
-              <h1 className="font-bold text-xl text-[#2C2C2C]">Educators Point</h1>
-              <p className="text-xs text-[#7A7A7A]">Admin Dashboard</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/content')} className="text-[#7A7A7A] hover:text-[#2563EB]">
-              <FileText className="w-4 h-4 mr-1" />
-              Content
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/analytics')} className="text-[#7A7A7A] hover:text-[#2563EB]">
-              <TrendingUp className="w-4 h-4 mr-1" />
-              Analytics
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/calendar')} className="text-[#7A7A7A] hover:text-[#2563EB]">
-              <Calendar className="w-4 h-4 mr-1" />
-              Calendar
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setLocation('/admin/crm')} className="text-[#7A7A7A] hover:text-[#2563EB]">
-              <Users className="w-4 h-4 mr-1" />
-              CRM
-            </Button>
-            <Button variant="outline" className="text-[#2563EB] border-[#2563EB] hover:bg-[#EFF6FF]">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+    <AdminLayout userName="Admin User" userEmail="admin@educatorspoint.com">
+      <motion.div 
+        className="max-w-7xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Admin Module Navigation */}
-        <div className="mb-8 p-4 bg-white border border-[#E0E7FF] rounded-lg">
-          <p className="text-sm text-[#7A7A7A] mb-3 font-semibold">Quick Access to Admin Modules</p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <Button variant="outline" onClick={() => setLocation('/admin')} className="border-[#2563EB] text-[#2563EB] hover:bg-[#EFF6FF]">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Dashboard
-            </Button>
-            <Button variant="outline" onClick={() => setLocation('/admin/content')} className="border-[#7A7A7A] hover:bg-gray-50">
-              <FileText className="w-4 h-4 mr-2" />
-              Content
-            </Button>
-            <Button variant="outline" onClick={() => setLocation('/admin/analytics')} className="border-[#7A7A7A] hover:bg-gray-50">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Analytics
-            </Button>
-            <Button variant="outline" onClick={() => setLocation('/admin/calendar')} className="border-[#7A7A7A] hover:bg-gray-50">
-              <Calendar className="w-4 h-4 mr-2" />
-              Calendar
-            </Button>
-            <Button variant="outline" onClick={() => setLocation('/admin/crm')} className="border-[#7A7A7A] hover:bg-gray-50">
-              <Users className="w-4 h-4 mr-2" />
-              CRM
-            </Button>
-          </div>
-        </div>
 
         {/* Stats Overview */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
             return (
-              <Card key={idx} className="p-6 hover:shadow-lg transition-all duration-300 border border-[#E0E7FF]">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-[#7A7A7A] mb-2">{stat.label}</p>
-                    <p className="text-3xl font-bold text-[#2C2C2C]">{stat.value}</p>
+              <motion.div key={idx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
+                <Card className="group p-6 backdrop-blur-xl bg-white/70 border border-white/40 hover:bg-white/90 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1 rounded-2xl">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm text-slate-500 mb-2 font-medium">{stat.label}</p>
+                      <p className="text-4xl font-bold bg-gradient-to-br from-slate-800 to-slate-600 bg-clip-text text-transparent">{stat.value}</p>
+                    </div>
+                    <div className="p-4 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: `${stat.color}15` }}>
+                      <Icon className="w-7 h-7" style={{ color: stat.color }} />
+                    </div>
                   </div>
-                  <div className="p-3 rounded-lg" style={{ backgroundColor: `${stat.color}20` }}>
-                    <Icon className="w-6 h-6" style={{ color: stat.color }} />
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             );
           })}
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-white border border-[#E0E7FF] p-1 rounded-lg mb-6">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white">Overview</TabsTrigger>
-            <TabsTrigger value="enrollments" className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white">Enrollments</TabsTrigger>
-            <TabsTrigger value="testimonials" className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white">Testimonials</TabsTrigger>
-            <TabsTrigger value="mentors" className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white">Mentors</TabsTrigger>
-          </TabsList>
+        {/* Overview Section */}
+        <div className="space-y-6">
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <Card className="p-8 border border-[#E0E7FF]">
-              <h2 className="text-2xl font-bold text-[#2C2C2C] mb-4">Dashboard Overview</h2>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="p-6 bg-gradient-to-br from-[#EFF6FF] to-[#F0F9FF] rounded-lg">
-                  <h3 className="font-bold text-[#2563EB] mb-2">Recent Enrollments</h3>
-                  <p className="text-3xl font-bold text-[#2C2C2C]">{enrollments.length}</p>
-                  <p className="text-sm text-[#7A7A7A] mt-2">New enrollments this month</p>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="p-8 backdrop-blur-xl bg-white/70 border border-white/40 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-500">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Dashboard Overview</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                <div className="p-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-bold text-blue-700 text-lg">Recent Enrollments</h3>
+                    <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                      isRealtimeConnected
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {isRealtimeConnected ? 'Live' : 'Syncing'}
+                    </span>
+                  </div>
+                  <p className="text-5xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">{enrollments.length}</p>
+                  <p className="text-sm text-slate-600 mt-3 font-medium">New enrollments this month</p>
                 </div>
-                <div className="p-6 bg-gradient-to-br from-[#F0FDF4] to-[#F0FDF4] rounded-lg">
-                  <h3 className="font-bold text-[#10B981] mb-2">Conversion Rate</h3>
-                  <p className="text-3xl font-bold text-[#2C2C2C]">85%</p>
-                  <p className="text-sm text-[#7A7A7A] mt-2">Enrollment confirmation rate</p>
+                <div className="p-8 bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-emerald-100">
+                  <h3 className="font-bold text-emerald-700 mb-3 text-lg">Conversion Rate</h3>
+                  <p className="text-5xl font-bold bg-gradient-to-br from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                    {enrollments.length > 0
+                      ? `${Math.round((enrollments.filter((e) => e.status === 'confirmed').length / enrollments.length) * 100)}%`
+                      : '0%'}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-3 font-medium">Enrollment confirmation rate</p>
                 </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* Enrollments Tab */}
-          <TabsContent value="enrollments" className="space-y-4">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-[#2C2C2C]">Manage Enrollments</h2>
-              <Button className="bg-[#2563EB] hover:bg-[#1E40AF] text-white">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Enrollment
-              </Button>
-            </div>
-            <div className="space-y-3">
-              {enrollments.map((enrollment) => (
-                <Card key={enrollment.id} className="p-4 border border-[#E0E7FF] hover:shadow-md transition-all duration-300">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-[#2C2C2C]">{enrollment.name}</h3>
-                      <p className="text-sm text-[#7A7A7A]">{enrollment.email}</p>
-                      <div className="flex gap-4 mt-2">
-                        <span className="text-xs bg-[#EFF6FF] text-[#2563EB] px-3 py-1 rounded-full">{enrollment.batch}</span>
-                        <span className={`text-xs px-3 py-1 rounded-full ${
-                          enrollment.status === 'confirmed' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEF3C7] text-[#92400E]'
-                        }`}>
-                          {enrollment.status.charAt(0).toUpperCase() + enrollment.status.slice(1)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="border-[#E0E7FF]">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="border-[#E0E7FF] text-red-600 hover:bg-red-50" onClick={() => handleDeleteEnrollment(enrollment.id)}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Testimonials Tab */}
-          <TabsContent value="testimonials" className="space-y-4">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-[#2C2C2C]">Manage Testimonials</h2>
-              <Button className="bg-[#2563EB] hover:bg-[#1E40AF] text-white">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Testimonial
-              </Button>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              {testimonials.map((testimonial) => (
-                <Card key={testimonial.id} className="p-6 border border-[#E0E7FF] hover:shadow-md transition-all duration-300">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-[#2C2C2C]">{testimonial.name}</h3>
-                      <p className="text-sm text-[#7A7A7A]">{testimonial.role}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="border-[#E0E7FF]">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="border-[#E0E7FF] text-red-600 hover:bg-red-50" onClick={() => handleDeleteTestimonial(testimonial.id)}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <p className="text-[#7A7A7A] mb-4">"{testimonial.content}"</p>
-                  <div className="flex gap-1">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i} className="text-[#F59E0B]">★</span>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Mentors Tab */}
-          <TabsContent value="mentors" className="space-y-4">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-[#2C2C2C]">Manage Mentors</h2>
-              <Button className="bg-[#2563EB] hover:bg-[#1E40AF] text-white">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Mentor
-              </Button>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              {mentors.map((mentor) => (
-                <Card key={mentor.id} className="p-6 border border-[#E0E7FF] hover:shadow-md transition-all duration-300">
-                  <div className="flex gap-4 mb-4">
-                    <img src={mentor.image} alt={mentor.name} className="w-16 h-16 rounded-lg object-cover" />
-                    <div className="flex-1">
-                      <h3 className="font-bold text-[#2C2C2C]">{mentor.name}</h3>
-                      <p className="text-sm text-[#7A7A7A]">{mentor.title}</p>
-                      <p className="text-xs text-[#2563EB] font-semibold mt-1">{mentor.experience}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 mb-4">
-                    {mentor.tags.map((tag, idx) => (
-                      <span key={idx} className="text-xs bg-[#EFF6FF] text-[#2563EB] px-2 py-1 rounded">{tag}</span>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="border-[#E0E7FF]">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="outline" className="border-[#E0E7FF] text-red-600 hover:bg-red-50" onClick={() => handleDeleteMentor(mentor.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+                </div>
+              </Card>
+            </motion.div>
+        </div>
+      </motion.div>
+    </AdminLayout>
   );
 }
