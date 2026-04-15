@@ -3,11 +3,34 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+const isValidUrl = (value: unknown) => {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const hasValidSupabaseConfig = Boolean(
+  isValidUrl(supabaseUrl) &&
+  typeof supabaseAnonKey === 'string' &&
+  supabaseAnonKey.trim().length > 0
+);
+
+if (!hasValidSupabaseConfig) {
+  console.error(
+    '[Supabase] Invalid or missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. ' +
+    'Set both values in your Render environment and rebuild.'
+  );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Use a valid fallback URL/key to keep the app bootable even with bad env config.
+export const supabase = createClient(
+  hasValidSupabaseConfig ? supabaseUrl : 'https://invalid.localhost',
+  hasValidSupabaseConfig ? supabaseAnonKey : 'invalid-anon-key'
+);
 
 export type Database = {
   public: {
