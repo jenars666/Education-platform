@@ -456,8 +456,8 @@ export default function EnrollmentForm() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <Card className="p-8 border border-[#E0E7FF] shadow-lg hover:shadow-xl transition-all duration-500">
+    <div className="w-full mx-auto">
+      <div className="w-full">
         <div className="mb-8 animate-fade-in">
           <h2 className="text-3xl font-bold text-[#2C2C2C] mb-2">
             {t('enroll.title')}
@@ -795,8 +795,8 @@ export default function EnrollmentForm() {
             {errors.preferredTeachingSubject && <p className="text-red-600 text-sm mt-1">{errors.preferredTeachingSubject}</p>}
             <input type="text" id="preferredJobLocation" name="preferredJobLocation" value={formData.preferredJobLocation} onChange={handleChange} placeholder="Preferred Location for Job" className="w-full px-4 py-3 rounded-lg border-2 border-[#E0E7FF] bg-white" />
             {errors.preferredJobLocation && <p className="text-red-600 text-sm mt-1">{errors.preferredJobLocation}</p>}
-            <select id="learningMode" name="learningMode" aria-label="Preferred learning mode" value={formData.learningMode} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border-2 border-[#E0E7FF] bg-white">
-              <option value="">Ready for Online / Offline / Both</option>
+            <select id="learningMode" name="learningMode" aria-label="Preferred learning mode" value={formData.learningMode} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border-2 border-[#E0E7FF] bg-white text-sm sm:text-base">
+              <option value="">Online / Offline / Both</option>
               {learningModes.map((mode) => (<option key={mode} value={mode}>{mode}</option>))}
             </select>
             {errors.learningMode && <p className="text-red-600 text-sm mt-1">{errors.learningMode}</p>}
@@ -817,8 +817,8 @@ export default function EnrollmentForm() {
               <option value="No">No</option>
             </select>
             <input type="text" id="preferredSalaryRange" name="preferredSalaryRange" value={formData.preferredSalaryRange} onChange={handleChange} placeholder="Preferred salary range" className="w-full px-4 py-3 rounded-lg border-2 border-[#E0E7FF] bg-white" />
-            <select id="teachingConfidence" name="teachingConfidence" aria-label="Teaching confidence rating" value={formData.teachingConfidence} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border-2 border-[#E0E7FF] bg-white">
-              <option value="">Rate your confidence in teaching (1-5)</option>
+            <select id="teachingConfidence" name="teachingConfidence" aria-label="Teaching confidence rating" value={formData.teachingConfidence} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border-2 border-[#E0E7FF] bg-white text-sm sm:text-base">
+              <option value="">Confidence in teaching (1-5)</option>
               {confidenceOptions.map((c) => (<option key={c} value={c}>{c}</option>))}
             </select>
             {errors.teachingConfidence && <p className="text-red-600 text-sm mt-1">{errors.teachingConfidence}</p>}
@@ -860,7 +860,7 @@ export default function EnrollmentForm() {
             {t('enroll.form.privacy')}
           </p>
         </form>
-      </Card>
+      </div>
 
       <style>{`
         @keyframes fade-in {
@@ -892,6 +892,6 @@ export default function EnrollmentForm() {
           opacity: 0;
         }
       `}</style>
-    </div>
-  );
+      </div>
+    );
 }

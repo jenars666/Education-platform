@@ -79,13 +79,13 @@ export default function Home() {
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 cursor-pointer"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 rotate-3">
-              <span className="text-white font-black text-xl italic leading-none">E</span>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 rotate-3">
+              <span className="text-white font-black text-lg sm:text-xl italic leading-none">E</span>
             </div>
-            <span className="font-black text-2xl tracking-tighter text-slate-900">Educators<span className="text-blue-600 font-medium">Point.</span></span>
+            <span className="font-black text-lg sm:text-xl md:text-2xl tracking-tighter text-slate-900 border-none">Educators<span className="text-blue-600 font-medium whitespace-nowrap">Point.</span></span>
           </motion.div>
 
           <div className="hidden lg:flex items-center gap-10">
@@ -110,10 +110,12 @@ export default function Home() {
             </motion.div>
           </div>
 
-          <div className="lg:hidden flex items-center gap-4">
-             <LanguageSelector />
-             <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => setIsMobileMenuOpen(true)}>
-               <Menu className="w-6 h-6 text-slate-900" />
+          <div className="lg:hidden flex items-center gap-2 sm:gap-4">
+             <div className="scale-90 sm:scale-100 origin-right">
+               <LanguageSelector />
+             </div>
+             <Button variant="ghost" size="icon" className="rounded-xl w-8 h-8 sm:w-10 sm:h-10" onClick={() => setIsMobileMenuOpen(true)}>
+               <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-slate-900" />
              </Button>
           </div>
         </div>
