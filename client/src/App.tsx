@@ -9,10 +9,11 @@ import { StickyEnrollCTA } from "./components/StickyEnrollCTA";
 import Home from "./pages/Home";
 import Enrollment from "./pages/Enrollment";
 import AdminDashboard from "./pages/AdminDashboard";
-import ContentManager from "./pages/ContentManager";
-import Analytics from "./pages/Analytics";
+import AdminEnrollments from "./pages/AdminEnrollments";
+import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminCalendar from "./pages/AdminCalendar";
-import AdminCRMDashboard from "./pages/AdminCRMDashboard";
+import AdminMentors from "./pages/AdminMentors";
+import AdminReviews from "./pages/AdminReviews";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -21,10 +22,11 @@ function Router() {
       <Route path={"\\"} component={Home} />
       <Route path={"/enroll"} component={Enrollment} />
       <Route path={"/admin"} component={AdminDashboard} />
-      <Route path={"/admin/content"} component={ContentManager} />
-      <Route path={"/admin/analytics"} component={Analytics} />
+      <Route path={"/admin/enrollments"} component={AdminEnrollments} />
+      <Route path={"/admin/analytics"} component={AdminAnalytics} />
       <Route path={"/admin/calendar"} component={AdminCalendar} />
-      <Route path={"/admin/crm"} component={AdminCRMDashboard} />
+      <Route path={"/admin/mentors"} component={AdminMentors} />
+      <Route path={"/admin/reviews"} component={AdminReviews} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
