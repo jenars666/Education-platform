@@ -1,6 +1,7 @@
-import { useState, ReactNode } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { supabase } from '@/lib/supabase';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -19,15 +20,7 @@ import {
   Bell, 
   Search, 
   Settings, 
-  LogOut, 
-  User, 
-  Moon, 
-  Sun,
-  Menu,
-  X,
-  ChevronRight,
-  Home,
-  MessageSquare
+  LogOut, User, Moon, Sun, Menu, X, ChevronRight, Home, MessageSquare, Loader2 
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
@@ -35,15 +28,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface AdminLayoutProps {
   children: ReactNode;
-  userName?: string;
-  userEmail?: string;
   userAvatar?: string;
 }
 
 export default function AdminLayout({ 
   children,
-  userName = "Admin User", 
-  userEmail = "admin@educatorspoint.com",
   userAvatar 
 }: AdminLayoutProps) {
   const [location, setLocation] = useLocation();
@@ -51,6 +40,36 @@ export default function AdminLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [notifications] = useState(3);
+  
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (!session?.user) {
+        setLocation('/admin/login');
+      }
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (!session?.user) {
+        setLocation('/admin/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [setLocation]);
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setLocation('/admin/login');
+  };
+
+  const userName = user?.user_metadata?.full_name || "Admin User";
+  const userEmail = user?.email || "admin@educatorspoint.com";
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', active: location === '/admin' },
@@ -65,6 +84,15 @@ export default function AdminLayout({
     setLocation(path);
     setIsMobileSidebarOpen(false);
   };
+
+  if (loading || !user) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <p className="text-slate-500 font-medium">Verifying credentials...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
@@ -183,7 +211,10 @@ export default function AdminLayout({
                 <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-slate-200" />
-              <DropdownMenuItem className="rounded-xl cursor-pointer hover:bg-red-50 text-red-600 transition-colors">
+              <DropdownMenuItem 
+                onClick={() => logout()}
+                className="rounded-xl cursor-pointer hover:bg-red-50 text-red-600 transition-colors"
+               >
                 <LogOut className="w-4 h-4 mr-2" />
                 <span>Logout</span>
               </DropdownMenuItem>

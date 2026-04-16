@@ -14,11 +14,12 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
+    'nav.home': 'Home',
     'nav.about': 'About',
     'nav.courses': 'Courses',
     'nav.experts': 'Experts',
     'nav.success': 'Success Stories',
-    'nav.enroll': 'Enroll Now',
+    'nav.enroll': 'Apply Now',
     'nav.back': 'Back to Home',
 
     // Hero Section
@@ -157,6 +158,7 @@ const translations: Record<Language, Record<string, string>> = {
   },
   ta: {
     // Navigation
+    'nav.home': 'முகப்பு',
     'nav.about': 'பற்றி',
     'nav.courses': 'பாடநெறிகள்',
     'nav.experts': 'நிபுணர்கள்',
@@ -300,6 +302,7 @@ const translations: Record<Language, Record<string, string>> = {
   },
   hi: {
     // Navigation
+    'nav.home': 'होम',
     'nav.about': 'परिचय',
     'nav.courses': 'पाठ्यक्रम',
     'nav.experts': 'विशेषज्ञ',

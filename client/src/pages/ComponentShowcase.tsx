@@ -1224,7 +1224,7 @@ export default function ComponentsShowcase() {
                       <span className="font-bold">B</span>
                     </Toggle>
                     <Toggle aria-label="Toggle italic">
-                      <span className="italic">I</span>
+                      <span className="">I</span>
                     </Toggle>
                     <Toggle aria-label="Toggle underline">
                       <span className="underline">U</span>
@@ -1239,7 +1239,7 @@ export default function ComponentsShowcase() {
                       <span className="font-bold">B</span>
                     </ToggleGroupItem>
                     <ToggleGroupItem value="italic" aria-label="Toggle italic">
-                      <span className="italic">I</span>
+                      <span className="">I</span>
                     </ToggleGroupItem>
                     <ToggleGroupItem
                       value="underline"

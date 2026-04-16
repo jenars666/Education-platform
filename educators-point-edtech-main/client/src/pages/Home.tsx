@@ -7,7 +7,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Users, Clock, Award, BookOpen, Zap, MessageCircle, Briefcase, Lightbulb, Shield, Laptop, CheckCircle, Target, Rocket, Globe } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronRight, Users, Clock, Award, BookOpen, Zap, MessageCircle, Briefcase, Lightbulb, Shield, Laptop, CheckCircle, Target, Rocket, Globe, GraduationCap, Brain, Presentation } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -20,7 +21,7 @@ export default function Home() {
 
   const { t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [hoveredModule, setHoveredModule] = useState<number | null>(null);
+  const [activeModuleTab, setActiveModuleTab] = useState('core');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,113 +31,32 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const modules = [
-    {
-      title: t('module.1.title'),
-      desc: t('module.1.desc'),
-      icon: Users,
-      color: "#2563EB",
-      lightColor: "#DBEAFE"
-    },
-    {
-      title: t('module.2.title'),
-      desc: t('module.2.desc'),
-      icon: Lightbulb,
-      color: "#1E40AF",
-      lightColor: "#EFF6FF"
-    },
-    {
-      title: t('module.3.title'),
-      desc: t('module.3.desc'),
-      icon: BookOpen,
-      color: "#3B82F6",
-      lightColor: "#F0F9FF"
-    },
-    {
-      title: t('module.4.title'),
-      desc: t('module.4.desc'),
-      icon: Zap,
-      color: "#2563EB",
-      lightColor: "#DBEAFE"
-    },
-    {
-      title: t('module.5.title'),
-      desc: t('module.5.desc'),
-      icon: Rocket,
-      color: "#1E40AF",
-      lightColor: "#EFF6FF"
-    },
-    {
-      title: t('module.6.title'),
-      desc: t('module.6.desc'),
-      icon: Target,
-      color: "#3B82F6",
-      lightColor: "#F0F9FF"
-    },
-    {
-      title: t('module.7.title'),
-      desc: t('module.7.desc'),
-      icon: Shield,
-      color: "#2563EB",
-      lightColor: "#DBEAFE"
-    },
-    {
-      title: t('module.8.title'),
-      desc: t('module.8.desc'),
-      icon: Laptop,
-      color: "#1E40AF",
-      lightColor: "#EFF6FF"
-    },
-    {
-      title: t('module.9.title'),
-      desc: t('module.9.desc'),
-      icon: CheckCircle,
-      color: "#3B82F6",
-      lightColor: "#F0F9FF"
-    },
-    {
-      title: t('module.10.title'),
-      desc: t('module.10.desc'),
-      icon: Briefcase,
-      color: "#2563EB",
-      lightColor: "#DBEAFE"
-    },
-    {
-      title: t('module.11.title'),
-      desc: t('module.11.desc'),
-      icon: Lightbulb,
-      color: "#1E40AF",
-      lightColor: "#EFF6FF"
-    },
-    {
-      title: t('module.12.title'),
-      desc: t('module.12.desc'),
-      icon: MessageCircle,
-      color: "#3B82F6",
-      lightColor: "#F0F9FF"
-    },
-    {
-      title: t('module.13.title'),
-      desc: t('module.13.desc'),
-      icon: Users,
-      color: "#2563EB",
-      lightColor: "#DBEAFE"
-    },
-    {
-      title: t('module.14.title'),
-      desc: t('module.14.desc'),
-      icon: Globe,
-      color: "#1E40AF",
-      lightColor: "#EFF6FF"
-    },
-    {
-      title: t('module.15.title'),
-      desc: t('module.15.desc'),
-      icon: Award,
-      color: "#3B82F6",
-      lightColor: "#F0F9FF"
-    }
-  ];
+  const moduleCategories = {
+    core: [
+      { title: t('module.1.title'), desc: t('module.1.desc'), icon: Users, color: "#2563EB", lightColor: "#DBEAFE" },
+      { title: t('module.2.title'), desc: t('module.2.desc'), icon: Lightbulb, color: "#1E40AF", lightColor: "#EFF6FF" },
+      { title: t('module.3.title'), desc: t('module.3.desc'), icon: BookOpen, color: "#3B82F6", lightColor: "#F0F9FF" },
+      { title: t('module.4.title'), desc: t('module.4.desc'), icon: Zap, color: "#2563EB", lightColor: "#DBEAFE" },
+      { title: t('module.5.title'), desc: t('module.5.desc'), icon: Rocket, color: "#1E40AF", lightColor: "#EFF6FF" },
+    ],
+    classroom: [
+      { title: t('module.6.title'), desc: t('module.6.desc'), icon: Target, color: "#3B82F6", lightColor: "#F0F9FF" },
+      { title: t('module.7.title'), desc: t('module.7.desc'), icon: Shield, color: "#2563EB", lightColor: "#DBEAFE" },
+      { title: t('module.9.title'), desc: t('module.9.desc'), icon: CheckCircle, color: "#3B82F6", lightColor: "#F0F9FF" },
+      { title: t('module.10.title'), desc: t('module.10.desc'), icon: Briefcase, color: "#2563EB", lightColor: "#DBEAFE" },
+    ],
+    digital: [
+      { title: t('module.8.title'), desc: t('module.8.desc'), icon: Laptop, color: "#1E40AF", lightColor: "#EFF6FF" },
+      { title: t('module.11.title'), desc: t('module.11.desc'), icon: Brain, color: "#1E40AF", lightColor: "#EFF6FF" },
+      { title: t('module.12.title'), desc: t('module.12.desc'), icon: MessageCircle, color: "#3B82F6", lightColor: "#F0F9FF" },
+      { title: t('module.13.title'), desc: t('module.13.desc'), icon: GraduationCap, color: "#2563EB", lightColor: "#DBEAFE" },
+    ],
+    career: [
+      { title: t('module.14.title'), desc: t('module.14.desc'), icon: Globe, color: "#1E40AF", lightColor: "#EFF6FF" },
+      { title: t('module.15.title'), desc: t('module.15.desc'), icon: Award, color: "#3B82F6", lightColor: "#F0F9FF" },
+      { title: "Professional Development", desc: "Continuous learning and skill enhancement opportunities", icon: Presentation, color: "#2563EB", lightColor: "#DBEAFE" },
+    ]
+  };
 
   const whyChooseUs = [
     t('why.1'),
@@ -271,40 +191,70 @@ export default function Home() {
       {/* What You Will Master Section */}
       <section id="courses" className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in">
+          <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-4xl font-bold text-[#2C2C2C] mb-4">{t('courses.title')}</h2>
             <p className="text-lg text-[#7A7A7A] max-w-2xl mx-auto">{t('courses.subtitle')}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {modules.map((module, index) => {
-              const IconComponent = module.icon;
-              const isHovered = hoveredModule === index;
-              return (
-                <Card
-                  key={index}
-                  className="p-8 border border-[#E0E7FF] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer group min-h-[280px] flex flex-col"
-                  onMouseEnter={() => setHoveredModule(index)}
-                  onMouseLeave={() => setHoveredModule(null)}
-                >
-                  <div className="flex gap-4 mb-6">
-                    <div
-                      className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-all duration-500 shadow-md"
-                      style={{ backgroundColor: module.lightColor }}
-                    >
-                      <IconComponent
-                        size={32}
-                        style={{ color: module.color }}
-                        className="group-hover:rotate-12 transition-transform duration-500"
-                      />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-[#2C2C2C] mb-3 group-hover:text-[#2563EB] transition-colors duration-300 flex-grow">{module.title}</h3>
-                  <p className="text-[#7A7A7A] text-base group-hover:text-[#2C2C2C] transition-colors duration-300 leading-relaxed">{module.desc}</p>
-                </Card>
-              );
-            })}
-          </div>
+          <Tabs value={activeModuleTab} onValueChange={setActiveModuleTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto mb-12 bg-[#F8FAFC] p-2 rounded-xl border border-[#E0E7FF]">
+              <TabsTrigger 
+                value="core" 
+                className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white rounded-lg font-semibold transition-all duration-300"
+              >
+                Core Teaching
+              </TabsTrigger>
+              <TabsTrigger 
+                value="classroom" 
+                className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white rounded-lg font-semibold transition-all duration-300"
+              >
+                Classroom Mgmt
+              </TabsTrigger>
+              <TabsTrigger 
+                value="digital" 
+                className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white rounded-lg font-semibold transition-all duration-300"
+              >
+                Digital & Innovation
+              </TabsTrigger>
+              <TabsTrigger 
+                value="career" 
+                className="data-[state=active]:bg-[#2563EB] data-[state=active]:text-white rounded-lg font-semibold transition-all duration-300"
+              >
+                Career Growth
+              </TabsTrigger>
+            </TabsList>
+
+            {Object.entries(moduleCategories).map(([category, modules]) => (
+              <TabsContent key={category} value={category} className="mt-0">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {modules.map((module, index) => {
+                    const IconComponent = module.icon;
+                    return (
+                      <Card
+                        key={index}
+                        className="p-6 border border-[#E0E7FF] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group"
+                      >
+                        <div className="flex gap-4 mb-4">
+                          <div
+                            className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-all duration-500 shadow-md"
+                            style={{ backgroundColor: module.lightColor }}
+                          >
+                            <IconComponent
+                              size={28}
+                              style={{ color: module.color }}
+                              className="group-hover:rotate-12 transition-transform duration-500"
+                            />
+                          </div>
+                        </div>
+                        <h3 className="text-lg font-bold text-[#2C2C2C] mb-2 group-hover:text-[#2563EB] transition-colors duration-300">{module.title}</h3>
+                        <p className="text-[#7A7A7A] text-sm group-hover:text-[#2C2C2C] transition-colors duration-300 leading-relaxed">{module.desc}</p>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
       </section>
 

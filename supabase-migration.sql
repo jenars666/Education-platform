@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS public.enrollments (
   batch_start_date VARCHAR(20) NOT NULL,
   batch_end_date VARCHAR(20) NOT NULL,
   price INTEGER NOT NULL,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled', 'not_reachable')),
   email_sent INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

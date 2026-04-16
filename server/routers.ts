@@ -30,10 +30,10 @@ export const appRouter = router({
           email: z.string().email().max(320),
           mobileNo: z.string().regex(/^[0-9]{10}$/),
           gender: z.string().nullable(),
-          dateOfBirth: z.string().min(1).max(20),
+          dateOfBirth: z.string().nullable(),
           state: z.string().min(2).max(120),
           district: z.string().min(2).max(120),
-          area: z.string().min(2).max(120),
+          area: z.string().nullable(),
           currentStatus: z.string().min(2).max(120),
 
           course: z.string().nullable(),
@@ -52,10 +52,10 @@ export const appRouter = router({
           yearsExperience: z.string().nullable(),
           instituteName: z.string().nullable(),
 
-          joiningReason: z.string().min(2).max(255),
-          preferredTeachingSubject: z.string().trim().min(2).max(255),
-          preferredJobLocation: z.string().trim().min(2).max(255),
-          learningMode: z.string().min(2).max(20),
+          joiningReason: z.string().nullable(),
+          preferredTeachingSubject: z.string().nullable(),
+          preferredJobLocation: z.string().nullable(),
+          learningMode: z.string().nullable(),
 
           skills: z.string().nullable(),
           languagesKnown: z.string().nullable(),
@@ -63,7 +63,7 @@ export const appRouter = router({
 
           jobAlerts: z.string().nullable(),
           preferredSalaryRange: z.string().nullable(),
-          teachingConfidence: z.string().min(1).max(5),
+          teachingConfidence: z.string().nullable(),
 
           resumeFileName: z.string().nullable(),
           certificateFileName: z.string().nullable(),

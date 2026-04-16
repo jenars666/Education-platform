@@ -54,7 +54,7 @@ export default function AdminReviews() {
                   </Button>
                 </div>
               </div>
-              <p className="text-slate-600 mb-4 italic">"{review.content}"</p>
+              <p className="text-slate-600 mb-4">"{review.content}"</p>
               <div className="flex gap-1">
                 {[...Array(review.rating)].map((_, i) => (
                   <span key={i} className="text-amber-400 text-lg">★</span>

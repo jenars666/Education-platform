@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
 import Enrollment from "./pages/Enrollment";
+import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminEnrollments from "./pages/AdminEnrollments";
 import AdminAnalytics from "./pages/AdminAnalytics";
@@ -20,6 +21,7 @@ function Router() {
     <Switch>
       <Route path={"\\"} component={Home} />
       <Route path={"/enroll"} component={Enrollment} />
+      <Route path={"/admin/login"} component={AdminLogin} />
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/admin/enrollments"} component={AdminEnrollments} />
       <Route path={"/admin/analytics"} component={AdminAnalytics} />

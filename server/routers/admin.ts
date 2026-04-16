@@ -529,10 +529,10 @@ export const enrollmentRouter = router({
       return data;
     }),
 
-  updateStatus: adminProcedure
+  updateStatus: publicProcedure
     .input(z.object({
       id: z.number(),
-      status: z.enum(["pending", "confirmed", "completed", "cancelled"]),
+      status: z.enum(["pending", "confirmed", "completed", "cancelled", "not_reachable"]),
     }))
     .mutation(async ({ input }) => {
       if (!supabase) throw new Error("Database not available");
@@ -545,4 +545,23 @@ export const enrollmentRouter = router({
       if (error) throw error;
       return { success: true };
     }),
+
+  getStats: publicProcedure.query(async () => {
+    if (!supabase) throw new Error("Database not available");
+
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select('status');
+
+    if (error) throw error;
+
+    const enrollments = data || [];
+    const total = enrollments.length;
+    const confirmed = enrollments.filter((e: any) => e.status === 'confirmed').length;
+    const pending = enrollments.filter((e: any) => e.status === 'pending').length;
+    const cancelled = enrollments.filter((e: any) => e.status === 'cancelled').length;
+    const notReachable = enrollments.filter((e: any) => e.status === 'not_reachable').length;
+
+    return { total, confirmed, pending, cancelled, notReachable };
+  }),
 });

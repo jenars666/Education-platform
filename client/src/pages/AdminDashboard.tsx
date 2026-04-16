@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Users, BookOpen, MessageSquare, Briefcase, TrendingUp, Sparkles, Activity, ShieldCheck, Clock } from 'lucide-react';
+import { Users, BookOpen, MessageSquare, TrendingUp, Sparkles, Activity, ShieldCheck, Clock } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import AdminLayout from '@/components/AdminLayout';
@@ -13,7 +13,7 @@ interface Enrollment {
   id: number;
   name: string;
   email: string;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'not_reachable';
 }
 
 export default function AdminDashboard() {
@@ -63,7 +63,8 @@ export default function AdminDashboard() {
     { label: 'Total Enrollments', value: enrollments.length, icon: Users, color: '#2563EB', lightColor: '#EFF6FF', trend: '+12% this week' },
     { label: 'Confirmed Batches', value: enrollments.filter((e) => e.status === 'confirmed').length, icon: BookOpen, color: '#10B981', lightColor: '#ECFDF5', trend: 'Solid Growth' },
     { label: 'Pending Reviews', value: enrollments.filter((e) => e.status === 'pending').length, icon: Clock, color: '#F59E0B', lightColor: '#FFFBEB', trend: 'Action Required' },
-    { label: 'Active Mentors', value: 12, icon: Briefcase, color: '#8B5CF6', lightColor: '#F5F3FF', trend: 'Fully Staffed' },
+    { label: 'Cancelled', value: enrollments.filter((e) => e.status === 'cancelled').length, icon: MessageSquare, color: '#EF4444', lightColor: '#FEF2F2', trend: 'Track Closely' },
+    { label: 'Not Reachable', value: enrollments.filter((e) => e.status === 'not_reachable').length, icon: Activity, color: '#F97316', lightColor: '#FFF7ED', trend: 'Follow Up' },
   ];
 
   return (
@@ -112,7 +113,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Bento Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
             return (
