@@ -1,6 +1,6 @@
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
-import { cmsRouter, analyticsRouter, calendarRouter, crmRouter, enrollmentRouter } from "./routers/admin";
+import { cmsRouter, analyticsRouter, calendarRouter, crmRouter, enrollmentRouter, mentorsRouter, reviewsRouter } from "./routers/admin";
 import { z } from "zod";
 import { supabase } from "./supabase";
 
@@ -20,6 +20,8 @@ export const appRouter = router({
   calendar: calendarRouter,
   crm: crmRouter,
   enrollment: enrollmentRouter,
+  mentors: mentorsRouter,
+  reviews: reviewsRouter,
 
   // Public enrollment submission
   enrollmentPublic: router({

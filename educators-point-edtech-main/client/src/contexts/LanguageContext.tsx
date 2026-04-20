@@ -22,7 +22,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.back': 'Back to Home',
 
     // Hero Section
-    'hero.badge': '🎓 Transform Into a Classroom-Ready Educator',
+    'hero.badge': 'Transform Into a Classroom-Ready Educator',
     'hero.title1': 'Master Teaching.',
     'hero.title2': 'Meet Global Standards.',
     'hero.title3': 'Get Placed.',
@@ -140,7 +140,7 @@ const translations: Record<Language, Record<string, string>> = {
     'enroll.form.batch': 'Select Your Batch',
     'enroll.form.terms': 'I agree to the Terms & Conditions and Privacy Policy',
     'enroll.form.submit': 'Secure Your Seat Now',
-    'enroll.form.privacy': 'We respect your privacy. Your information will only be used for enrollment purposes.',
+    'enroll.form.privacy': 'We respect your privacy. Your information will only be used for registration purposes.',
     'enroll.faq.title': 'Frequently Asked Questions',
     'enroll.faq.q1': 'Who can enroll in this program?',
     'enroll.faq.a1': 'The program is open to B.Ed students, B.Ed graduates, non-B.Ed graduates, and career switchers. Anyone passionate about teaching can apply.',
@@ -149,7 +149,7 @@ const translations: Record<Language, Record<string, string>> = {
     'enroll.faq.q3': 'Is there placement assistance?',
     'enroll.faq.a3': 'Yes! We provide 100% placement assistance including resume support, interview preparation, and connections with school partners.',
     'enroll.faq.q4': 'What is the course fee?',
-    'enroll.faq.a4': 'Course fees vary by batch. Early bird discounts are available for the first 20 enrollments. Contact us for detailed pricing information.',
+    'enroll.faq.a4': 'Course fees vary by batch. Early bird discounts are available for the first 20 registrations. Contact us for detailed pricing information.',
     'enroll.faq.q5': 'What will I learn?',
     'enroll.faq.a5': 'You\'ll learn lesson planning, classroom management, teaching methodologies, digital tools, communication skills, and receive placement preparation guidance.',
     'enroll.faq.q6': 'Do I get a certificate?',
@@ -165,7 +165,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.back': 'முகப்புக்குத் திரும்பவும்',
 
     // Hero Section
-    'hero.badge': '🎓 வகுப்பறையில் தயாரான ஆசிரியராக மாறுங்கள்',
+    'hero.badge': 'வகுப்பறையில் தயாரான ஆசிரியராக மாறுங்கள்',
     'hero.title1': 'கற்பிப்பதை மாஸ்டர் செய்யுங்கள்.',
     'hero.title2': 'உலகளாவிய தரங்களை சந்திக்கவும்.',
     'hero.title3': 'வேலை பெறுங்கள்.',
@@ -308,7 +308,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.back': 'होम पर वापस जाएं',
 
     // Hero Section
-    'hero.badge': '🎓 कक्षा के लिए तैयार शिक्षक बनें',
+    'hero.badge': 'कक्षा के लिए तैयार शिक्षक बनें',
     'hero.title1': 'शिक्षण में महारत हासिल करें।',
     'hero.title2': 'वैश्विक मानकों को पूरा करें।',
     'hero.title3': 'नौकरी पाएं।',

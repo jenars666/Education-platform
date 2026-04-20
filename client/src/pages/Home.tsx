@@ -5,12 +5,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ChevronRight, Users, Clock, Award, BookOpen, Zap, 
   MessageCircle, Briefcase, Lightbulb, Shield, Laptop, 
-  CheckCircle, Target, Rocket, Globe, Star, ArrowUpRight, Menu, X
+  CheckCircle, Target, Rocket, Globe, Star, ArrowUpRight, Menu, X,
+  Quote, Loader2
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -19,6 +21,10 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeModuleTab, setActiveModuleTab] = useState("core");
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Fetch live mentors & reviews from DB
+  const { data: liveMentors } = trpc.mentors.getPublic.useQuery();
+  const { data: liveReviews } = trpc.reviews.getPublic.useQuery();
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -62,6 +68,37 @@ export default function Home() {
 
   const whyChooseUs = [t('why.1'), t('why.2'), t('why.3'), t('why.4'), t('why.5')];
   const outcomes = [t('why.outcome.1'), t('why.outcome.2'), t('why.outcome.3'), t('why.outcome.4')];
+  const audienceItems = [t('audience.1'), t('audience.2'), t('audience.3'), t('audience.4')];
+  const audienceThemes = [
+    {
+      card: "from-blue-50 to-sky-50 border-blue-200/80 hover:border-blue-300",
+      glow: "bg-blue-200/50",
+      iconWrap: "from-blue-100 to-sky-100 ring-blue-200/80",
+      icon: "text-blue-700",
+      title: "group-hover:text-blue-900"
+    },
+    {
+      card: "from-amber-50 to-orange-50 border-amber-200/80 hover:border-amber-300",
+      glow: "bg-amber-200/50",
+      iconWrap: "from-amber-100 to-orange-100 ring-amber-200/80",
+      icon: "text-amber-700",
+      title: "group-hover:text-amber-900"
+    },
+    {
+      card: "from-emerald-50 to-teal-50 border-emerald-200/80 hover:border-emerald-300",
+      glow: "bg-emerald-200/50",
+      iconWrap: "from-emerald-100 to-teal-100 ring-emerald-200/80",
+      icon: "text-emerald-700",
+      title: "group-hover:text-emerald-900"
+    },
+    {
+      card: "from-indigo-50 to-violet-50 border-indigo-200/80 hover:border-indigo-300",
+      glow: "bg-indigo-200/50",
+      iconWrap: "from-indigo-100 to-violet-100 ring-indigo-200/80",
+      icon: "text-indigo-700",
+      title: "group-hover:text-indigo-900"
+    }
+  ] as const;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -75,6 +112,19 @@ export default function Home() {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: "easeOut" } }
   };
+
+  // Fallback data used while the API is loading or if it returns empty
+  const fallbackMentors = [
+    { name: 'Priya Sharma', title: 'Curriculum & Teaching Methods Specialist', description: 'Expert in teaching pedagogy with focus on modern curriculum design and innovative engagement techniques.', experience: '10+ Years', focus: 'Curriculum Design', image_url: '/expert_profile_1_1776280727429.png', tag1: 'Lesson Planning', tag2: 'Engagement' },
+    { name: 'Gajesh Kumar', title: 'Classroom Management & Leadership Coach', description: 'Trained thousands of teachers in effective classroom leadership, behavioural management, and student motivation.', experience: '12+ Years', focus: 'Classroom Leadership', image_url: '/expert_profile_2_1776280747423.png', tag1: 'Management', tag2: 'Leadership' },
+    { name: 'Ananya Iyer', title: 'Digital Pedagogy & EdTech Innovator', description: 'Pioneers digital-first teaching methods using smart tools and interactive platforms for next generation educators.', experience: '5+ Years', focus: 'Digital Pedagogy', image_url: '/expert_profile_1_1776280727429.png', tag1: 'EdTech', tag2: 'Innovation' },
+  ];
+
+  const fallbackReviews = [
+    { name: 'Sarah Johnson', role: 'Secondary Teacher', content: 'This program transformed my teaching approach completely! The mentors are incredibly knowledgeable and supportive.', rating: 5 },
+    { name: 'Vikram Desai', role: 'Primary Educator', content: 'Best investment in my teaching career. The practical techniques I learned are now part of my daily routine. Highly recommended!', rating: 5 },
+    { name: 'Aisha Patel', role: 'Aspiring Teacher', content: 'Even as someone just starting out, I found the course material very accessible and the community incredibly welcoming.', rating: 5 },
+  ];
 
   return (
     <div ref={containerRef} className="min-h-screen bg-white text-slate-900 selection:bg-blue-100 selection:text-blue-900">
@@ -121,7 +171,7 @@ export default function Home() {
              <div className="scale-90 sm:scale-100 origin-right">
                <LanguageSelector />
              </div>
-             <Button variant="ghost" size="icon" className="rounded-xl w-8 h-8 sm:w-10 sm:h-10" onClick={() => setIsMobileMenuOpen(true)}>
+             <Button variant="ghost" size="icon" className="rounded-xl w-8 h-8 sm:w-10 sm:h-10 mr-[5mm] sm:mr-0" onClick={() => setIsMobileMenuOpen(true)}>
                <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-slate-900" />
              </Button>
           </div>
@@ -191,7 +241,6 @@ export default function Home() {
                 transition={{ delay: 0.2 }}
                 className="inline-flex items-center gap-1.5 sm:gap-2 bg-blue-50/80 backdrop-blur-sm text-blue-600 px-4 md:px-5 py-2 md:py-2.5 rounded-[1.5rem] md:rounded-full font-bold text-[9.5px] sm:text-[11px] md:text-xs uppercase tracking-wider md:tracking-[0.2em] mb-6 md:mb-8 ring-1 ring-blue-100 shadow-sm text-center leading-snug lg:text-left"
               >
-                <span className="text-[10px] md:text-xs shrink-0">✨</span>
                 <span>{t('hero.badge')}</span>
               </motion.div>
 
@@ -394,6 +443,55 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Target Audience */}
+      <section className="py-8 md:py-10 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[540px] h-[220px] bg-[radial-gradient(circle,rgba(59,130,246,0.14)_0%,rgba(59,130,246,0)_72%)]" />
+          <div className="absolute -bottom-24 right-[-10%] w-[360px] h-[200px] bg-[radial-gradient(circle,rgba(37,99,235,0.10)_0%,rgba(37,99,235,0)_74%)]" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-5 md:mb-6"
+          >
+            <h2 className={`${language === 'ta' ? 'text-xl sm:text-2xl md:text-3xl' : 'text-2xl sm:text-3xl md:text-4xl'} font-extrabold text-slate-900 mb-2 tracking-tight leading-tight sm:text-balance break-words`}>
+              {t('audience.title')}
+            </h2>
+            <p className="text-xs sm:text-sm md:text-base text-slate-600 font-medium leading-relaxed">
+              {t('audience.subtitle')}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
+            {audienceItems.map((item, index) => {
+              const theme = audienceThemes[index % audienceThemes.length];
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.08 }}
+                >
+                  <Card className={`group relative h-full bg-gradient-to-b ${theme.card} backdrop-blur-sm border rounded-xl md:rounded-2xl p-4 md:p-5 text-center shadow-[0_6px_20px_rgba(15,23,42,0.08)] hover:shadow-[0_14px_28px_rgba(37,99,235,0.16)] hover:-translate-y-1 transition-all duration-300 overflow-hidden`}>
+                    <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-blue-400/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className={`absolute -right-10 -top-10 w-24 h-24 rounded-full ${theme.glow} blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+                    <div className={`w-8 h-8 md:w-9 md:h-9 mx-auto mb-3 rounded-lg bg-gradient-to-b ${theme.iconWrap} ring-1 shadow-inner flex items-center justify-center`}>
+                      <Users className={`w-3.5 h-3.5 md:w-4 md:h-4 ${theme.icon}`} />
+                    </div>
+                    <h3 className={`text-sm md:text-[15px] font-semibold text-slate-900 leading-snug ${theme.title} transition-colors`}>{item}</h3>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Program Highlights */}
       <section className="py-16 md:py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-6">
@@ -454,7 +552,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Experts Section */}
+      {/* Experts Section — Live from Database */}
       <section id="experts" className="py-16 md:py-24 bg-slate-50 relative overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-blue-50/60 to-transparent pointer-events-none" />
 
@@ -477,17 +575,9 @@ export default function Home() {
           </motion.div>
 
           <div className="flex gap-5 md:gap-6 overflow-x-auto pb-3 -mx-2 px-2 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {[
-              { name: t('expert.1.name'), title: t('expert.1.title'), desc: t('expert.1.desc'), tag1: t('expert.1.tag1'), tag2: t('expert.1.tag2'), experience: '10+ Years', focus: 'Curriculum Design', img: '/expert_profile_1_1776280727429.png' },
-              { name: 'Gajesh Kumar', title: t('expert.2.title'), desc: t('expert.2.desc'), tag1: t('expert.2.tag1'), tag2: t('expert.2.tag2'), experience: '12+ Years', focus: 'Classroom Leadership', img: '/expert_profile_2_1776280747423.png' },
-              { name: t('expert.3.name'), title: t('expert.3.title'), desc: t('expert.3.desc'), tag1: t('expert.3.tag1'), tag2: t('expert.3.tag2'), experience: '5+ Years', focus: 'Digital Pedagogy', img: '/expert_profile_1_1776280727429.png' },
-              { name: 'Sneha Rao', title: 'Primary Education Strategist', desc: 'Designs student-first classroom systems and practical engagement routines for foundational years.', tag1: 'Child-Centered', tag2: 'Pedagogy', experience: '12+ Years', focus: 'Foundational Learning', img: '/expert_profile_2_1776280747423.png' },
-              { name: 'Rahul Varma', title: 'EdTech & Blended Learning Lead', desc: 'Specializes in integrating digital tools, LMS workflows, and hybrid lesson delivery across grades.', tag1: 'EdTech Tools', tag2: 'Hybrid Learning', experience: '8+ Years', focus: 'Technology Integration', img: '/expert_profile_1_1776280727429.png' },
-              { name: 'Meera Nair', title: 'Inclusive Teaching Mentor', desc: 'Supports educators in differentiated instruction and building inclusive, high-confidence classrooms.', tag1: 'Inclusion', tag2: 'Differentiation', experience: '10+ Years', focus: 'Special Education', img: '/expert_profile_2_1776280747423.png' },
-              { name: 'Anand Singh', title: 'Assessment & Feedback Coach', desc: 'Helps teachers build outcome-driven assessments and meaningful feedback strategies for better progress.', tag1: 'Formative', tag2: 'Summative', experience: '14+ Years', focus: 'Assessment Systems', img: '/expert_profile_1_1776280727429.png' }
-            ].map((expert, idx) => (
+            {(liveMentors && liveMentors.length > 0 ? liveMentors : fallbackMentors).map((expert, idx) => (
               <motion.div
-                key={idx}
+                key={expert.name + idx}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -500,7 +590,7 @@ export default function Home() {
                     <div className="absolute top-0 right-0 h-20 w-20 rounded-bl-3xl bg-gradient-to-b from-blue-100/70 to-blue-50/20" />
                     <div className="flex items-center gap-4 relative z-10">
                       <div className="w-20 h-20 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-sm bg-slate-100">
-                        <img src={expert.img} alt={expert.name} className="w-full h-full object-cover" />
+                        <img src={expert.image_url || '/expert_profile_1_1776280727429.png'} alt={expert.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-xl font-bold text-slate-900 tracking-tight truncate">{expert.name}</h3>
@@ -510,28 +600,38 @@ export default function Home() {
                   </div>
 
                   <div className="px-6 pb-6 pt-1 flex flex-col h-[calc(100%-7.5rem)]">
-                    <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">{expert.desc}</p>
+                    {expert.description && (
+                      <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">{expert.description}</p>
+                    )}
 
                     <div className="space-y-2.5 mb-5">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                        <Clock className="w-3.5 h-3.5 text-blue-600" />
-                        <span>{expert.experience} experience</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                        <Target className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>{expert.focus}</span>
-                      </div>
+                      {expert.experience && (
+                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                          <Clock className="w-3.5 h-3.5 text-blue-600" />
+                          <span>{expert.experience} experience</span>
+                        </div>
+                      )}
+                      {expert.focus && (
+                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                          <Target className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>{expert.focus}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="mt-auto flex flex-wrap gap-2.5">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 text-blue-700 px-3 py-1.5 text-xs font-bold border border-blue-100">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                        {expert.tag1}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 text-indigo-700 px-3 py-1.5 text-xs font-bold border border-indigo-100">
-                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
-                        {expert.tag2}
-                      </span>
+                      {expert.tag1 && (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 text-blue-700 px-3 py-1.5 text-xs font-bold border border-blue-100">
+                          <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                          {expert.tag1}
+                        </span>
+                      )}
+                      {expert.tag2 && (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 text-indigo-700 px-3 py-1.5 text-xs font-bold border border-indigo-100">
+                          <div className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
+                          {expert.tag2}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Card>
@@ -541,53 +641,159 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Modern High-End Footer */}
-      <footer className="bg-white pt-32 pb-10 border-t border-slate-100">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 mb-32">
-            <div className="lg:col-span-1">
-              <div className="flex items-center gap-3 mb-10">
-                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 rotate-3">
+      {/* Reviews / Testimonials Section — Live from Database */}
+      {(liveReviews && liveReviews.length > 0 || fallbackReviews.length > 0) && (
+        <section className="py-16 md:py-24 bg-white relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 left-[-5%] w-[320px] h-[320px] bg-blue-100/30 rounded-full blur-[100px]" />
+            <div className="absolute bottom-1/4 right-[-5%] w-[280px] h-[280px] bg-indigo-100/30 rounded-full blur-[100px]" />
+          </div>
+
+          <div className="container mx-auto px-6 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-10 md:mb-14"
+            >
+              <div className="inline-block bg-amber-50 text-amber-700 px-5 py-2 rounded-full font-bold text-xs mb-5 uppercase tracking-[0.18em] border border-amber-100 shadow-sm">
+                Student Testimonials
+              </div>
+              <h2 className={`${language === 'ta' ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-3xl sm:text-4xl md:text-5xl'} font-bold text-slate-900 mb-5 tracking-tight leading-tight`}>
+                What Our Students Say
+              </h2>
+              <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+                Real stories from real educators who transformed their teaching careers with us.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {(liveReviews && liveReviews.length > 0 ? liveReviews : fallbackReviews).map((review, idx) => (
+                <motion.div
+                  key={review.name + idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.45, delay: idx * 0.1 }}
+                >
+                  <Card className="h-full bg-white border border-slate-100 rounded-3xl p-7 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-amber-50/60 rounded-bl-[3rem] -translate-y-2 translate-x-2 group-hover:bg-amber-50 transition-colors" />
+                    <Quote className="w-8 h-8 text-amber-300 mb-4 relative z-10" />
+                    <p className="text-slate-700 text-[15px] leading-relaxed mb-6 font-medium relative z-10">
+                      "{review.content}"
+                    </p>
+                    <div className="mt-auto flex items-center gap-3 relative z-10">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                        {review.name.charAt(0)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-slate-900 text-sm truncate">{review.name}</div>
+                        <div className="text-xs text-slate-500 font-medium">{review.role}</div>
+                      </div>
+                      <div className="flex gap-0.5 shrink-0">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`} />
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Site Footer */}
+      <footer className="bg-slate-950 text-slate-200">
+        <div className="container mx-auto px-6 py-14 md:py-16">
+          <div className="grid grid-cols-1 gap-10 border-b border-slate-800 pb-10 md:pb-12 lg:grid-cols-12 lg:gap-8">
+            <div className="lg:col-span-5">
+              <a href="#" className="inline-flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
                   <span className="text-white font-black text-xl leading-none">E</span>
                 </div>
-                <span className="font-black text-2xl tracking-tighter text-slate-900">Educators<span className="text-blue-600 font-medium">Point.</span></span>
-              </div>
-              <p className="text-slate-500 font-medium leading-relaxed mb-10">
+                <span className="font-black text-2xl tracking-tight text-white">
+                  Educators<span className="text-blue-400 font-medium">Point.</span>
+                </span>
+              </a>
+              <p className="mt-6 max-w-md text-sm md:text-base text-slate-300 leading-relaxed">
                 {t('footer.tagline')}
               </p>
-              <div className="flex gap-4">
-                 <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all cursor-pointer"><Users className="w-5 h-5" /></div>
-                 <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all cursor-pointer"><Globe className="w-5 h-5" /></div>
-                 <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all cursor-pointer"><Rocket className="w-5 h-5" /></div>
+
+              <div className="mt-6 flex items-center gap-3">
+                <a
+                  href="/#about"
+                  aria-label="Our community"
+                  className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-colors"
+                >
+                  <Users className="w-5 h-5" />
+                </a>
+                <a
+                  href="/#courses"
+                  aria-label="Our courses"
+                  className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-colors"
+                >
+                  <Globe className="w-5 h-5" />
+                </a>
+                <a
+                  href="/#experts"
+                  aria-label="Our experts"
+                  className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-colors"
+                >
+                  <Rocket className="w-5 h-5" />
+                </a>
               </div>
             </div>
-            
-            <div>
-              <h4 className="font-black text-slate-900 mb-10 uppercase tracking-widest text-xs">{t('footer.links')}</h4>
-              <ul className="space-y-5 font-bold">
-                {['about', 'courses', 'experts'].map(i => (
-                  <li key={i}><a href={`#${i}`} className="hover:text-blue-600 transition-colors uppercase text-xs tracking-widest">{t(`nav.${i}`)}</a></li>
+
+            <div className="lg:col-span-3">
+              <h4 className="text-sm font-semibold text-white">{t('footer.links')}</h4>
+              <ul className="mt-5 space-y-3">
+                {['about', 'courses', 'experts'].map((i) => (
+                  <li key={i}>
+                    <a href={`/#${i}`} className="text-sm text-slate-300 hover:text-blue-400 transition-colors">
+                      {t(`nav.${i}`)}
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>
 
-            <div>
-              <h4 className="font-black text-slate-900 mb-10 uppercase tracking-widest text-xs">{t('footer.support')}</h4>
-              <ul className="space-y-5 font-bold">
-                {['FAQ', 'Privacy Policy', 'Terms of Service'].map(i => (
-                  <li key={i}><a href="#" className="hover:text-blue-600 transition-colors uppercase text-xs tracking-widest">{i}</a></li>
-                ))}
+            <div className="lg:col-span-4">
+              <h4 className="text-sm font-semibold text-white">{t('footer.support')}</h4>
+              <ul className="mt-5 space-y-3">
+                <li>
+                  <a href="/enroll" className="text-sm text-slate-300 hover:text-blue-400 transition-colors">
+                    FAQ
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-slate-300 hover:text-blue-400 transition-colors">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-slate-300 hover:text-blue-400 transition-colors">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:support@educatorspoint.com" className="text-sm text-slate-300 hover:text-blue-400 transition-colors">
+                    support@educatorspoint.com
+                  </a>
+                </li>
               </ul>
             </div>
-
           </div>
-          
-          <div className="border-t border-slate-100 pt-16 flex flex-col md:flex-row justify-between items-center gap-10">
-            <p className="text-[10px] font-black tracking-[0.3em] uppercase">{t('footer.copyright')}</p>
-            <div className="flex gap-10 text-[10px] font-black uppercase tracking-widest">
-                <a href="#" className="hover:text-blue-600 transition-colors">Safety</a>
-                <a href="#" className="hover:text-blue-600 transition-colors">Ethics</a>
-                <a href="#" className="hover:text-blue-600 transition-colors">Accessibility</a>
+
+          <div className="pt-6 md:pt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
+              {t('footer.copyright')}
+            </p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs md:text-sm text-slate-400">
+              <a href="#" className="hover:text-blue-400 transition-colors">Safety</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">Ethics</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">Accessibility</a>
             </div>
           </div>
         </div>

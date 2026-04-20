@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { CheckCircle2, Download, PhoneOff, RefreshCw, Search, XCircle, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { CheckCircle2, Download, PhoneOff, RefreshCw, Search, XCircle, ChevronLeft, ChevronRight, Filter, Phone, MessageCircle, Mail } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import AdminLayout from '@/components/AdminLayout';
 import { supabase } from '@/lib/supabase';
@@ -40,11 +40,30 @@ function getTwoHourBlock(dateStr: string) {
   return TIME_BLOCKS[startHour / 2];
 }
 
+function getInternationalPhone(mobileNo: string | null) {
+  if (!mobileNo) return '';
+  const digits = mobileNo.replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits.length === 10) return `91${digits}`;
+  if (digits.length === 11 && digits.startsWith('0')) return `91${digits.slice(1)}`;
+  if (digits.startsWith('91')) return digits;
+  return digits;
+}
+
+function WhatsAppLogo() {
+  return (
+    <span className="relative inline-flex h-4 w-4 items-center justify-center" aria-hidden>
+      <span className="absolute inset-0 rounded-full bg-white/20" />
+      <MessageCircle className="h-4 w-4 text-white/95" strokeWidth={2.2} />
+      <Phone className="absolute h-2.5 w-2.5 text-white" strokeWidth={2.8} />
+    </span>
+  );
+}
+
 export default function AdminEnrollments() {
   const utils = trpc.useUtils();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | Enrollment['status']>('all');
-  const [batchFilter, setBatchFilter] = useState<'all' | string>('all');
   
   // Table Column Dropdown Filters
   const [stateFilter, setStateFilter] = useState('all');
@@ -65,13 +84,7 @@ export default function AdminEnrollments() {
 
   const enrollments = enrollmentData as Enrollment[];
 
-  const availableBatches = useMemo(() => {
-    const batches = new Set<string>();
-    enrollments.forEach((item) => {
-      if (item.batch) batches.add(item.batch);
-    });
-    return ['all', ...Array.from(batches).sort()];
-  }, [enrollments]);
+
 
   // Unique values for the 4 column filters
   const availableStates = useMemo(() => {
@@ -99,7 +112,6 @@ export default function AdminEnrollments() {
     return enrollments
       .filter((item) => {
         if (statusFilter !== 'all' && item.status !== statusFilter) return false;
-        if (batchFilter !== 'all' && item.batch !== batchFilter) return false;
         
         if (stateFilter !== 'all' && item.state !== stateFilter) return false;
         if (districtFilter !== 'all' && item.district !== districtFilter) return false;
@@ -126,7 +138,7 @@ export default function AdminEnrollments() {
         return haystack.includes(query);
       })
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  }, [batchFilter, enrollments, searchTerm, statusFilter, stateFilter, districtFilter, dateFilter, timingFilter]);
+  }, [enrollments, searchTerm, statusFilter, stateFilter, districtFilter, dateFilter, timingFilter]);
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(filteredEnrollments.length / ROWS_PER_PAGE));
@@ -138,7 +150,7 @@ export default function AdminEnrollments() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, batchFilter, stateFilter, districtFilter, dateFilter, timingFilter]);
+  }, [searchTerm, statusFilter, stateFilter, districtFilter, dateFilter, timingFilter]);
 
   const stats = useMemo(() => {
     const total = enrollments.length;
@@ -226,11 +238,11 @@ export default function AdminEnrollments() {
 
   const getStatusBadge = (status: Enrollment['status']) => {
     const map: Record<Enrollment['status'], { bg: string; text: string; label: string }> = {
-      pending: { bg: 'bg-amber-100', text: 'text-amber-800', label: 'Pending' },
-      confirmed: { bg: 'bg-emerald-100', text: 'text-emerald-800', label: 'Confirmed' },
-      completed: { bg: 'bg-sky-100', text: 'text-sky-800', label: 'Completed' },
-      cancelled: { bg: 'bg-red-100', text: 'text-red-800', label: 'Cancelled' },
-      not_reachable: { bg: 'bg-orange-100', text: 'text-orange-800', label: 'Not Reachable' },
+      pending: { bg: 'bg-amber-100 dark:bg-amber-500/20', text: 'text-amber-800 dark:text-amber-300', label: 'Pending' },
+      confirmed: { bg: 'bg-emerald-100 dark:bg-emerald-500/20', text: 'text-emerald-800 dark:text-emerald-300', label: 'Confirmed' },
+      completed: { bg: 'bg-sky-100 dark:bg-sky-500/20', text: 'text-sky-800 dark:text-sky-300', label: 'Completed' },
+      cancelled: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-800 dark:text-red-300', label: 'Cancelled' },
+      not_reachable: { bg: 'bg-orange-100 dark:bg-orange-500/20', text: 'text-orange-800 dark:text-orange-300', label: 'Not Reachable' },
     };
     const s = map[status] || map.pending;
     return (
@@ -242,11 +254,11 @@ export default function AdminEnrollments() {
 
   const getRowBgClass = (status: Enrollment['status']) => {
     switch (status) {
-      case 'confirmed': return 'bg-emerald-50/40';
-      case 'cancelled': return 'bg-red-50/40';
-      case 'not_reachable': return 'bg-orange-50/40';
-      case 'completed': return 'bg-sky-50/40';
-      default: return 'bg-white';
+      case 'confirmed': return 'bg-emerald-50/40 dark:bg-emerald-900/20';
+      case 'cancelled': return 'bg-red-50/40 dark:bg-red-900/20';
+      case 'not_reachable': return 'bg-orange-50/40 dark:bg-orange-900/20';
+      case 'completed': return 'bg-sky-50/40 dark:bg-sky-900/20';
+      default: return 'bg-white dark:bg-slate-900/60';
     }
   };
 
@@ -275,7 +287,7 @@ export default function AdminEnrollments() {
             </option>
           ))}
         </select>
-        <Filter className="w-3 h-3 text-slate-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-70" />
+        <Filter className="w-3 h-3 text-slate-400 dark:text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-70" />
       </div>
     </div>
   );
@@ -289,14 +301,14 @@ export default function AdminEnrollments() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
               Enrollments
             </h1>
-            <p className="text-slate-500 text-sm">Manage student enrollments &amp; applications</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Manage student enrollments &amp; applications</p>
           </div>
 
           <div className="flex items-center gap-2">
             <Button
               onClick={handleExport}
               disabled={isEnrollmentsLoading || filteredEnrollments.length === 0}
-              className="bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 shadow-sm rounded-xl text-sm h-9 px-4"
+              className="bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 shadow-sm rounded-xl text-sm h-9 px-4"
             >
               <Download className="w-4 h-4 mr-1.5" />
               Export Excel
@@ -314,38 +326,38 @@ export default function AdminEnrollments() {
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
-          <Card className="p-3.5 bg-white border border-slate-200 rounded-xl">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
-            <p className="text-2xl font-black text-slate-900 mt-0.5">{stats.total}</p>
+          <Card className="p-3.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-xl">
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{stats.total}</p>
           </Card>
-          <Card className="p-3.5 bg-emerald-50/60 border border-emerald-200 rounded-xl">
-            <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Confirmed</p>
-            <p className="text-2xl font-black text-emerald-700 mt-0.5">{stats.confirmed}</p>
+          <Card className="p-3.5 bg-emerald-50/60 dark:bg-emerald-900/25 border border-emerald-200 dark:border-emerald-700/70 rounded-xl">
+            <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-300 uppercase tracking-widest">Confirmed</p>
+            <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-0.5">{stats.confirmed}</p>
           </Card>
-          <Card className="p-3.5 bg-amber-50/60 border border-amber-200 rounded-xl">
-            <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Pending</p>
-            <p className="text-2xl font-black text-amber-700 mt-0.5">{stats.pending}</p>
+          <Card className="p-3.5 bg-amber-50/60 dark:bg-amber-900/25 border border-amber-200 dark:border-amber-700/70 rounded-xl">
+            <p className="text-[10px] font-bold text-amber-600 dark:text-amber-300 uppercase tracking-widest">Pending</p>
+            <p className="text-2xl font-black text-amber-700 dark:text-amber-300 mt-0.5">{stats.pending}</p>
           </Card>
-          <Card className="p-3.5 bg-red-50/60 border border-red-200 rounded-xl">
-            <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest">Cancelled</p>
-            <p className="text-2xl font-black text-red-700 mt-0.5">{stats.cancelled}</p>
+          <Card className="p-3.5 bg-red-50/60 dark:bg-red-900/25 border border-red-200 dark:border-red-700/70 rounded-xl">
+            <p className="text-[10px] font-bold text-red-600 dark:text-red-300 uppercase tracking-widest">Cancelled</p>
+            <p className="text-2xl font-black text-red-700 dark:text-red-300 mt-0.5">{stats.cancelled}</p>
           </Card>
-          <Card className="p-3.5 bg-orange-50/60 border border-orange-200 rounded-xl">
-            <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Not Reachable</p>
-            <p className="text-2xl font-black text-orange-700 mt-0.5">{stats.notReachable}</p>
+          <Card className="p-3.5 bg-orange-50/60 dark:bg-orange-900/25 border border-orange-200 dark:border-orange-700/70 rounded-xl">
+            <p className="text-[10px] font-bold text-orange-600 dark:text-orange-300 uppercase tracking-widest">Not Reachable</p>
+            <p className="text-2xl font-black text-orange-700 dark:text-orange-300 mt-0.5">{stats.notReachable}</p>
           </Card>
         </div>
 
         {/* Filters */}
-        <Card className="p-3 bg-white border border-slate-200 rounded-xl mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Card className="p-3 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-xl mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search name, email, mobile, location..."
-                className="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                className="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950/80 text-slate-700 dark:text-slate-100 text-sm outline-none focus:border-blue-400 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40"
               />
             </div>
 
@@ -354,7 +366,7 @@ export default function AdminEnrollments() {
               onChange={(e) => setStatusFilter(e.target.value as 'all' | Enrollment['status'])}
               aria-label="Filter enrollments by status"
               title="Filter enrollments by status"
-              className="h-9 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 bg-white"
+              className="h-9 rounded-lg border border-slate-200 dark:border-slate-700 px-3 text-sm text-slate-700 dark:text-slate-100 outline-none focus:border-blue-400 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 bg-white dark:bg-slate-950/80"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -362,25 +374,11 @@ export default function AdminEnrollments() {
               <option value="cancelled">Cancelled</option>
               <option value="not_reachable">Not Reachable</option>
             </select>
-
-            <select
-              value={batchFilter}
-              onChange={(e) => setBatchFilter(e.target.value)}
-              aria-label="Filter enrollments by batch"
-              title="Filter enrollments by batch"
-              className="h-9 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 bg-white"
-            >
-              {availableBatches.map((batch) => (
-                <option key={batch} value={batch}>
-                  {batch === 'all' ? 'All Batches' : batch}
-                </option>
-              ))}
-            </select>
           </div>
         </Card>
 
         {/* Excel-Style Table */}
-        <Card className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+        <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm align-top" style={{ minWidth: '1200px' }}>
               <thead>
@@ -396,13 +394,13 @@ export default function AdminEnrollments() {
                     {renderColumnFilter('District', districtFilter, availableDistricts, setDistrictFilter)}
                   </th>
                   <th className="px-3 py-3 text-left font-semibold text-xs uppercase tracking-wider whitespace-nowrap border-r border-slate-700">Place</th>
-                  <th className="px-3 py-3 text-left font-semibold text-xs uppercase tracking-wider whitespace-nowrap border-r border-slate-700">Batch</th>
                   <th className="px-3 py-2 text-left font-semibold text-xs uppercase tracking-wider whitespace-nowrap border-r border-slate-700 align-top">
                     {renderColumnFilter('Enrolled', dateFilter, availableDates, setDateFilter)}
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-xs uppercase tracking-wider whitespace-nowrap border-r border-slate-700 align-top">
                     {renderColumnFilter('Timing', timingFilter, availableTimings, setTimingFilter)}
                   </th>
+                  <th className="px-3 py-3 text-center font-semibold text-xs uppercase tracking-wider whitespace-nowrap border-r border-slate-700">Contact</th>
                   <th className="px-3 py-3 text-left font-semibold text-xs uppercase tracking-wider whitespace-nowrap border-r border-slate-700">Status</th>
                   <th className="px-3 py-3 text-center font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Actions</th>
                 </tr>
@@ -410,7 +408,7 @@ export default function AdminEnrollments() {
               <tbody>
                 {isEnrollmentsLoading && (
                   <tr>
-                    <td colSpan={12} className="px-6 py-12 text-center text-slate-400">
+                    <td colSpan={12} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                       <div className="flex flex-col items-center gap-2">
                         <RefreshCw className="w-5 h-5 animate-spin" />
                         <span>Loading enrollments...</span>
@@ -421,7 +419,7 @@ export default function AdminEnrollments() {
 
                 {!isEnrollmentsLoading && filteredEnrollments.length === 0 && (
                   <tr>
-                    <td colSpan={12} className="px-6 py-12 text-center text-slate-400">
+                    <td colSpan={12} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                       No enrollments match the current filters.
                     </td>
                   </tr>
@@ -429,56 +427,52 @@ export default function AdminEnrollments() {
 
                 {!isEnrollmentsLoading && paginatedEnrollments.map((enrollment, idx) => {
                   const globalIndex = (currentPage - 1) * ROWS_PER_PAGE + idx + 1;
+                  const normalizedPhone = getInternationalPhone(enrollment.mobile_no);
+                  const hasPhone = normalizedPhone.length > 0;
+                  const hasEmail = Boolean(enrollment.email?.trim());
                   return (
                     <tr
                       key={enrollment.id}
-                      className={`border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-150 ${getRowBgClass(enrollment.status)}`}
+                      className={`border-b border-slate-100 dark:border-slate-800 hover:bg-blue-50/40 dark:hover:bg-slate-800/60 transition-colors duration-150 ${getRowBgClass(enrollment.status)}`}
                     >
                       {/* S.No */}
-                      <td className="px-3 py-2.5 text-slate-500 font-mono text-xs border-r border-slate-100 text-center">
+                      <td className="px-3 py-2.5 text-slate-500 dark:text-slate-400 font-mono text-xs border-r border-slate-100 dark:border-slate-800 text-center">
                         {globalIndex}
                       </td>
 
                       {/* Name */}
-                      <td className="px-3 py-2.5 border-r border-slate-100">
-                        <span className="font-semibold text-slate-800 whitespace-nowrap">{enrollment.name}</span>
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800">
+                        <span className="font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap">{enrollment.name}</span>
                       </td>
 
                       {/* Email */}
-                      <td className="px-3 py-2.5 border-r border-slate-100">
-                        <span className="text-slate-600 text-xs">{enrollment.email}</span>
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800">
+                        <span className="text-slate-600 dark:text-slate-300 text-xs">{enrollment.email}</span>
                       </td>
 
                       {/* Mobile */}
-                      <td className="px-3 py-2.5 border-r border-slate-100 whitespace-nowrap">
-                        <span className="text-slate-700 font-mono text-xs">{enrollment.mobile_no || '—'}</span>
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800 whitespace-nowrap">
+                        <span className="text-slate-700 dark:text-slate-200 font-mono text-xs">{enrollment.mobile_no || '—'}</span>
                       </td>
 
                       {/* State */}
-                      <td className="px-3 py-2.5 border-r border-slate-100 whitespace-nowrap">
-                        <span className="text-slate-600 text-xs">{enrollment.state || '—'}</span>
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800 whitespace-nowrap">
+                        <span className="text-slate-600 dark:text-slate-300 text-xs">{enrollment.state || '—'}</span>
                       </td>
 
                       {/* District */}
-                      <td className="px-3 py-2.5 border-r border-slate-100 whitespace-nowrap">
-                        <span className="text-slate-600 text-xs">{enrollment.district || '—'}</span>
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800 whitespace-nowrap">
+                        <span className="text-slate-600 dark:text-slate-300 text-xs">{enrollment.district || '—'}</span>
                       </td>
 
                       {/* Place */}
-                      <td className="px-3 py-2.5 border-r border-slate-100 whitespace-nowrap">
-                        <span className="text-slate-600 text-xs">{enrollment.place || '—'}</span>
-                      </td>
-
-                      {/* Batch */}
-                      <td className="px-3 py-2.5 border-r border-slate-100">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100 whitespace-nowrap">
-                          {enrollment.batch}
-                        </span>
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800 whitespace-nowrap">
+                        <span className="text-slate-600 dark:text-slate-300 text-xs">{enrollment.place || '—'}</span>
                       </td>
 
                       {/* Enrolled Date */}
-                      <td className="px-3 py-2.5 border-r border-slate-100 whitespace-nowrap">
-                        <span className="text-slate-500 text-xs">
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800 whitespace-nowrap">
+                        <span className="text-slate-500 dark:text-slate-400 text-xs">
                           {new Date(enrollment.created_at).toLocaleDateString('en-IN', {
                             day: '2-digit',
                             month: 'short',
@@ -488,8 +482,8 @@ export default function AdminEnrollments() {
                       </td>
 
                       {/* Enrolled Time (Timing) */}
-                      <td className="px-3 py-2.5 border-r border-slate-100 whitespace-nowrap">
-                        <span className="text-slate-500 text-xs">
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800 whitespace-nowrap">
+                        <span className="text-slate-500 dark:text-slate-400 text-xs">
                           {new Date(enrollment.created_at).toLocaleTimeString('en-IN', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -498,8 +492,52 @@ export default function AdminEnrollments() {
                         </span>
                       </td>
 
+                      {/* Contact Buttons */}
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <a
+                            href={hasPhone ? `tel:+${normalizedPhone}` : undefined}
+                            aria-label={hasPhone ? `Call ${enrollment.name}` : `Phone not available for ${enrollment.name}`}
+                            title={hasPhone ? `Call ${enrollment.mobile_no}` : 'Phone number not available'}
+                            className={`inline-flex h-7 w-7 items-center justify-center rounded-md border transition-all duration-200 ${
+                              hasPhone
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:shadow-sm'
+                                : 'cursor-not-allowed border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 pointer-events-none'
+                            }`}
+                          >
+                            <Phone className="h-3.5 w-3.5" />
+                          </a>
+                          <a
+                            href={hasPhone ? `https://wa.me/${normalizedPhone}` : undefined}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={hasPhone ? `WhatsApp ${enrollment.name}` : `Phone not available for ${enrollment.name}`}
+                            title={hasPhone ? `WhatsApp ${enrollment.mobile_no}` : 'Phone number not available'}
+                            className={`group inline-flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-200 ${
+                              hasPhone
+                                ? 'border-[#1FAE55] bg-gradient-to-br from-[#25D366] via-[#1FC65D] to-[#128C4A] text-white shadow-[0_4px_12px_rgba(18,140,74,0.35)] hover:-translate-y-0.5 hover:shadow-[0_8px_16px_rgba(18,140,74,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]/40'
+                                : 'cursor-not-allowed border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 pointer-events-none'
+                            }`}
+                          >
+                            <WhatsAppLogo />
+                          </a>
+                          <a
+                            href={hasEmail ? `mailto:${enrollment.email}` : undefined}
+                            aria-label={hasEmail ? `Email ${enrollment.name}` : `Email not available for ${enrollment.name}`}
+                            title={hasEmail ? `Email ${enrollment.email}` : 'Email not available'}
+                            className={`inline-flex h-7 w-7 items-center justify-center rounded-md border transition-all duration-200 ${
+                              hasEmail
+                                ? 'border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 hover:shadow-sm'
+                                : 'cursor-not-allowed border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 pointer-events-none'
+                            }`}
+                          >
+                            <Mail className="h-3.5 w-3.5" />
+                          </a>
+                        </div>
+                      </td>
+
                       {/* Status */}
-                      <td className="px-3 py-2.5 border-r border-slate-100">
+                      <td className="px-3 py-2.5 border-r border-slate-100 dark:border-slate-800">
                         {getStatusBadge(enrollment.status)}
                       </td>
 
@@ -511,7 +549,7 @@ export default function AdminEnrollments() {
                             size="sm"
                             className={`h-7 px-2.5 text-xs font-semibold rounded-lg shadow-sm transition-all duration-200 ${
                               enrollment.status === 'confirmed'
-                                ? 'bg-emerald-200 text-emerald-800 cursor-not-allowed opacity-60'
+                                ? 'bg-emerald-200 dark:bg-emerald-800/60 text-emerald-800 dark:text-emerald-200 cursor-not-allowed opacity-60'
                                 : 'bg-emerald-500 hover:bg-emerald-600 text-white hover:shadow-md'
                             }`}
                             onClick={() => handleStatusUpdate(enrollment.id, 'confirmed')}
@@ -526,7 +564,7 @@ export default function AdminEnrollments() {
                             size="sm"
                             className={`h-7 px-2.5 text-xs font-semibold rounded-lg shadow-sm transition-all duration-200 ${
                               enrollment.status === 'cancelled'
-                                ? 'bg-red-200 text-red-800 cursor-not-allowed opacity-60'
+                                ? 'bg-red-200 dark:bg-red-800/60 text-red-800 dark:text-red-200 cursor-not-allowed opacity-60'
                                 : 'bg-red-500 hover:bg-red-600 text-white hover:shadow-md'
                             }`}
                             onClick={() => handleStatusUpdate(enrollment.id, 'cancelled')}
@@ -541,7 +579,7 @@ export default function AdminEnrollments() {
                             size="sm"
                             className={`h-7 px-2.5 text-xs font-semibold rounded-lg shadow-sm transition-all duration-200 ${
                               enrollment.status === 'not_reachable'
-                                ? 'bg-orange-200 text-orange-800 cursor-not-allowed opacity-60'
+                                ? 'bg-orange-200 dark:bg-orange-800/60 text-orange-800 dark:text-orange-200 cursor-not-allowed opacity-60'
                                 : 'bg-orange-500 hover:bg-orange-600 text-white hover:shadow-md'
                             }`}
                             onClick={() => handleStatusUpdate(enrollment.id, 'not_reachable')}
@@ -561,22 +599,22 @@ export default function AdminEnrollments() {
 
           {/* Pagination Footer */}
           {!isEnrollmentsLoading && filteredEnrollments.length > 0 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/50">
-              <p className="text-xs text-slate-500">
-                Showing <span className="font-semibold text-slate-700">{(currentPage - 1) * ROWS_PER_PAGE + 1}</span>
+            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Showing <span className="font-semibold text-slate-700 dark:text-slate-200">{(currentPage - 1) * ROWS_PER_PAGE + 1}</span>
                 {' '}–{' '}
-                <span className="font-semibold text-slate-700">
+                <span className="font-semibold text-slate-700 dark:text-slate-200">
                   {Math.min(currentPage * ROWS_PER_PAGE, filteredEnrollments.length)}
                 </span>
                 {' '}of{' '}
-                <span className="font-semibold text-slate-700">{filteredEnrollments.length}</span> enrollments
+                <span className="font-semibold text-slate-700 dark:text-slate-200">{filteredEnrollments.length}</span> enrollments
               </p>
 
               <div className="flex items-center gap-1">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 w-7 p-0 rounded-lg border-slate-200"
+                  className="h-7 w-7 p-0 rounded-lg border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                 >
@@ -595,15 +633,15 @@ export default function AdminEnrollments() {
                     return (
                       <span key={page} className="flex items-center">
                         {showEllipsisBefore && (
-                          <span className="px-1 text-slate-400 text-xs">…</span>
+                          <span className="px-1 text-slate-400 dark:text-slate-500 text-xs">…</span>
                         )}
                         <Button
                           size="sm"
                           variant={page === currentPage ? 'default' : 'outline'}
                           className={`h-7 w-7 p-0 rounded-lg text-xs font-semibold ${
                             page === currentPage
-                              ? 'bg-slate-900 text-white'
-                              : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+                              ? 'bg-slate-900 dark:bg-slate-700 text-white'
+                              : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                           }`}
                           onClick={() => setCurrentPage(page)}
                         >
@@ -616,7 +654,7 @@ export default function AdminEnrollments() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 w-7 p-0 rounded-lg border-slate-200"
+                  className="h-7 w-7 p-0 rounded-lg border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                 >

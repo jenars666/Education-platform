@@ -14,20 +14,22 @@ import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminCalendar from "./pages/AdminCalendar";
 import AdminMentors from "./pages/AdminMentors";
 import AdminReviews from "./pages/AdminReviews";
+import NotificationTest from "./pages/NotificationTest";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"\\"} component={Home} />
-      <Route path={"/enroll"} component={Enrollment} />
-      <Route path={"/admin"} component={AdminDashboard} />
+      <Route path="/" component={Home} />
+      <Route path="/enroll" component={Enrollment} />
+      <Route path="/test-notifications" component={NotificationTest} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/enrollments" component={AdminEnrollments} />
-      <Route path={"/admin/analytics"} component={AdminAnalytics} />
-      <Route path={"/admin/calendar"} component={AdminCalendar} />
+      <Route path="/admin/analytics" component={AdminAnalytics} />
+      <Route path="/admin/calendar" component={AdminCalendar} />
       <Route path="/admin/mentors" component={AdminMentors} />
       <Route path="/admin/reviews" component={AdminReviews} />
-      <Route path={"/404"} component={NotFound} />
+      <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>

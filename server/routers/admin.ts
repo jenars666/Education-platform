@@ -2,6 +2,35 @@ import { z } from "zod";
 import { adminProcedure, publicProcedure, router } from "../_core/trpc";
 import { supabase } from "../supabase";
 
+// Explicit types for mentor and review records
+export interface MentorRecord {
+  id: number;
+  name: string;
+  title: string;
+  description: string | null;
+  experience: string | null;
+  focus: string | null;
+  image_url: string | null;
+  tag1: string | null;
+  tag2: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReviewRecord {
+  id: number;
+  name: string;
+  role: string;
+  content: string;
+  rating: number;
+  image_url: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 /**
  * CMS Content Management Router
  */
@@ -565,3 +594,230 @@ export const enrollmentRouter = router({
     return { total, confirmed, pending, cancelled, notReachable };
   }),
 });
+
+/**
+ * Mentors Router — Full CRUD for admin, public read for home page
+ */
+export const mentorsRouter = router({
+  // Public: get all active mentors for home page
+  getPublic: publicProcedure.query(async (): Promise<MentorRecord[]> => {
+    if (!supabase) throw new Error("Database not available");
+
+    const { data, error } = await supabase
+      .from('mentors')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+    return (data || []) as MentorRecord[];
+  }),
+
+  // Admin: get all mentors (including inactive)
+  getAll: publicProcedure.query(async (): Promise<MentorRecord[]> => {
+    if (!supabase) throw new Error("Database not available");
+
+    const { data, error } = await supabase
+      .from('mentors')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+    return (data || []) as MentorRecord[];
+  }),
+
+  // Admin: create a mentor
+  create: publicProcedure
+    .input(z.object({
+      name: z.string().min(1),
+      title: z.string().min(1),
+      description: z.string().optional(),
+      experience: z.string().optional(),
+      focus: z.string().optional(),
+      imageUrl: z.string().optional(),
+      tag1: z.string().optional(),
+      tag2: z.string().optional(),
+      sortOrder: z.number().optional(),
+      isActive: z.boolean().default(true),
+    }))
+    .mutation(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
+
+      const { data, error } = await supabase.from('mentors').insert({
+        name: input.name,
+        title: input.title,
+        description: input.description || null,
+        experience: input.experience || null,
+        focus: input.focus || null,
+        image_url: input.imageUrl || null,
+        tag1: input.tag1 || null,
+        tag2: input.tag2 || null,
+        sort_order: input.sortOrder ?? 0,
+        is_active: input.isActive,
+      }).select().single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  // Admin: update a mentor
+  update: publicProcedure
+    .input(z.object({
+      id: z.number(),
+      name: z.string().optional(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      experience: z.string().optional(),
+      focus: z.string().optional(),
+      imageUrl: z.string().optional(),
+      tag1: z.string().optional(),
+      tag2: z.string().optional(),
+      sortOrder: z.number().optional(),
+      isActive: z.boolean().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
+
+      const { id, ...updates } = input;
+      const updateData: any = {};
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.experience !== undefined) updateData.experience = updates.experience;
+      if (updates.focus !== undefined) updateData.focus = updates.focus;
+      if (updates.imageUrl !== undefined) updateData.image_url = updates.imageUrl;
+      if (updates.tag1 !== undefined) updateData.tag1 = updates.tag1;
+      if (updates.tag2 !== undefined) updateData.tag2 = updates.tag2;
+      if (updates.sortOrder !== undefined) updateData.sort_order = updates.sortOrder;
+      if (updates.isActive !== undefined) updateData.is_active = updates.isActive;
+
+      const { error } = await supabase
+        .from('mentors')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
+      return { success: true };
+    }),
+
+  // Admin: delete a mentor
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
+
+      const { error } = await supabase
+        .from('mentors')
+        .delete()
+        .eq('id', input.id);
+
+      if (error) throw error;
+      return { success: true };
+    }),
+});
+
+/**
+ * Reviews Router — Full CRUD for admin, public read for home page
+ */
+export const reviewsRouter = router({
+  // Public: get all active reviews for home page
+  getPublic: publicProcedure.query(async (): Promise<ReviewRecord[]> => {
+    if (!supabase) throw new Error("Database not available");
+
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []) as ReviewRecord[];
+  }),
+
+  // Admin: get all reviews (including inactive)
+  getAll: publicProcedure.query(async (): Promise<ReviewRecord[]> => {
+    if (!supabase) throw new Error("Database not available");
+
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []) as ReviewRecord[];
+  }),
+
+  // Admin: create a review
+  create: publicProcedure
+    .input(z.object({
+      name: z.string().min(1),
+      role: z.string().min(1),
+      content: z.string().min(1),
+      rating: z.number().min(1).max(5).default(5),
+      imageUrl: z.string().optional(),
+      isActive: z.boolean().default(true),
+    }))
+    .mutation(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
+
+      const { data, error } = await supabase.from('reviews').insert({
+        name: input.name,
+        role: input.role,
+        content: input.content,
+        rating: input.rating,
+        image_url: input.imageUrl || null,
+        is_active: input.isActive,
+      }).select().single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  // Admin: update a review
+  update: publicProcedure
+    .input(z.object({
+      id: z.number(),
+      name: z.string().optional(),
+      role: z.string().optional(),
+      content: z.string().optional(),
+      rating: z.number().min(1).max(5).optional(),
+      imageUrl: z.string().optional(),
+      isActive: z.boolean().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
+
+      const { id, ...updates } = input;
+      const updateData: any = {};
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.role !== undefined) updateData.role = updates.role;
+      if (updates.content !== undefined) updateData.content = updates.content;
+      if (updates.rating !== undefined) updateData.rating = updates.rating;
+      if (updates.imageUrl !== undefined) updateData.image_url = updates.imageUrl;
+      if (updates.isActive !== undefined) updateData.is_active = updates.isActive;
+
+      const { error } = await supabase
+        .from('reviews')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
+      return { success: true };
+    }),
+
+  // Admin: delete a review
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
+
+      const { error } = await supabase
+        .from('reviews')
+        .delete()
+        .eq('id', input.id);
+
+      if (error) throw error;
+      return { success: true };
+    }),
+});
+

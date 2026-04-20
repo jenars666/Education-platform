@@ -31,6 +31,7 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = document.documentElement;
+
     if (theme === "dark") {
       root.classList.add("dark");
     } else {
@@ -42,9 +43,46 @@ export function ThemeProvider({
     }
   }, [theme, switchable]);
 
+  const runThemeTransition = (applyTheme: () => void) => {
+    if (typeof window === "undefined") {
+      applyTheme();
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      applyTheme();
+      return;
+    }
+
+    const root = document.documentElement;
+    root.classList.add("theme-transitioning");
+
+    const docWithTransition = document as Document & {
+      startViewTransition?: (callback: () => void) => { finished?: Promise<void> };
+    };
+
+    if (docWithTransition.startViewTransition) {
+      const transition = docWithTransition.startViewTransition(() => {
+        applyTheme();
+      });
+      transition?.finished?.finally(() => {
+        root.classList.remove("theme-transitioning");
+      });
+      return;
+    }
+
+    applyTheme();
+    window.setTimeout(() => {
+      root.classList.remove("theme-transitioning");
+    }, 380);
+  };
+
   const toggleTheme = switchable
     ? () => {
-        setTheme(prev => (prev === "light" ? "dark" : "light"));
+        runThemeTransition(() => {
+          setTheme((prev) => (prev === "light" ? "dark" : "light"));
+        });
       }
     : undefined;
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
@@ -29,6 +29,8 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { trpc } from '@/lib/trpc';
+import { supabase } from '@/lib/supabase';
 
 interface AdminNavbarProps {
   userName?: string;
@@ -44,7 +46,96 @@ export default function AdminNavbar({
   const [location, setLocation] = useLocation();
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [notifications] = useState(3);
+  const [showNewNotification, setShowNewNotification] = useState(false);
+
+  const { data: notificationCount = 0, refetch: refetchCount, error: countError, isLoading: countLoading } = trpc.enrollment.getUnreadCount.useQuery(undefined, {
+    onSuccess: (data) => {
+      console.log('[Client] ✅ Notification count received:', data);
+    },
+    onError: (error) => {
+      console.error('[Client] ❌ Error fetching count:', error);
+    }
+  });
+  const { data: recentEnrollments = [], refetch: refetchRecent, error: recentError, isLoading: recentLoading } = trpc.enrollment.getRecent.useQuery({ limit: 5 }, {
+    onSuccess: (data) => {
+      console.log('[Client] ✅ Recent enrollments received:', data?.length, 'items');
+      console.log('[Client] 📋 Data:', data);
+    },
+    onError: (error) => {
+      console.error('[Client] ❌ Error fetching recent:', error);
+    }
+  });
+
+  // Log errors if any
+  useEffect(() => {
+    if (countError) console.error('[Client] Count error:', countError);
+    if (recentError) console.error('[Client] Recent error:', recentError);
+  }, [countError, recentError]);
+
+  // Real-time subscription to enrollments table
+  useEffect(() => {
+    if (!supabase) {
+      console.warn('⚠️ Supabase client not available');
+      return;
+    }
+
+    console.log('🔌 Connecting to Supabase Realtime...');
+    console.log('📊 Current notification count:', notificationCount);
+    console.log('📋 Current recent enrollments:', recentEnrollments?.length || 0);
+    console.log('⏳ Loading states - Count:', countLoading, 'Recent:', recentLoading);
+    if (countError) console.error('❌ Count error:', countError);
+    if (recentError) console.error('❌ Recent error:', recentError);
+
+    const channel = supabase
+      .channel('enrollments-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'enrollments'
+        },
+        (payload) => {
+          console.log('🔔 New enrollment received:', payload);
+          console.log('📧 Student:', payload.new?.name, '|', payload.new?.email);
+          // Refetch counts and recent enrollments immediately
+          refetchCount();
+          refetchRecent();
+          // Show animation
+          setShowNewNotification(true);
+          setTimeout(() => setShowNewNotification(false), 3000);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'enrollments'
+        },
+        (payload) => {
+          console.log('📝 Enrollment updated:', payload);
+          console.log('🔄 Status changed:', payload.old?.status, '→', payload.new?.status);
+          // Refetch when status changes
+          refetchCount();
+          refetchRecent();
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Successfully subscribed to enrollments realtime updates');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Error subscribing to realtime channel');
+        } else {
+          console.log('📡 Realtime status:', status);
+        }
+      });
+
+    return () => {
+      console.log('🔌 Disconnecting from Supabase Realtime...');
+      supabase.removeChannel(channel);
+    };
+  }, [refetchCount, refetchRecent]);
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', active: location === '/admin' },
@@ -121,6 +212,22 @@ export default function AdminNavbar({
               <Button
                 variant="ghost"
                 size="icon"
+                onClick={() => {
+                  console.log('🔄 Manual refresh triggered');
+                  console.log('Current count:', notificationCount);
+                  console.log('Current enrollments:', recentEnrollments);
+                  refetchCount();
+                  refetchRecent();
+                }}
+                className="relative w-10 h-10 rounded-xl backdrop-blur-xl bg-white/60 border border-white/40 hover:bg-white/80 shadow-md"
+                title="Refresh notifications"
+              >
+                <span className="text-lg">🔄</span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setIsDark(!isDark)}
                 className="relative w-10 h-10 rounded-xl backdrop-blur-xl bg-white/60 border border-white/40 hover:bg-white/80 shadow-md"
               >
@@ -132,18 +239,73 @@ export default function AdminNavbar({
               </Button>
 
               {/* Notifications */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative w-10 h-10 rounded-xl backdrop-blur-xl bg-white/60 border border-white/40 hover:bg-white/80 shadow-md"
-              >
-                <Bell className="w-5 h-5 text-slate-600" />
-                {notifications > 0 && (
-                  <Badge className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0 bg-gradient-to-r from-red-500 to-pink-500 border-2 border-white text-xs">
-                    {notifications}
-                  </Badge>
-                )}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`relative w-10 h-10 rounded-xl backdrop-blur-xl bg-white/60 border border-white/40 hover:bg-white/80 shadow-md transition-all ${
+                      showNewNotification ? 'animate-bounce' : ''
+                    }`}
+                  >
+                    <Bell className={`w-5 h-5 text-slate-600 ${
+                      showNewNotification ? 'animate-pulse' : ''
+                    }`} />
+                    {notificationCount > 0 && (
+                      <Badge className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0 bg-gradient-to-r from-red-500 to-pink-500 border-2 border-white text-xs animate-pulse">
+                        {notificationCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-80 backdrop-blur-2xl bg-white/90 border-white/40 shadow-2xl rounded-2xl p-2"
+                >
+                  <DropdownMenuLabel className="text-slate-700 font-semibold text-base">
+                    New Enrollments ({notificationCount})
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-slate-200" />
+                  {recentEnrollments.length > 0 ? (
+                    <>
+                      {recentEnrollments.map((enrollment: any) => (
+                        <DropdownMenuItem 
+                          key={enrollment.id}
+                          className="rounded-xl cursor-pointer hover:bg-blue-50 transition-colors p-3"
+                          onClick={() => handleNavigation('/admin/crm')}
+                        >
+                          <div className="flex flex-col gap-1 w-full">
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-sm text-slate-800">{enrollment.name}</span>
+                              <Badge className="bg-blue-100 text-blue-700 text-xs">{enrollment.batch}</Badge>
+                            </div>
+                            <span className="text-xs text-slate-500">{enrollment.email}</span>
+                            <span className="text-xs text-slate-400">
+                              {new Date(enrollment.created_at).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuSeparator className="bg-slate-200" />
+                      <DropdownMenuItem 
+                        className="rounded-xl cursor-pointer hover:bg-blue-50 transition-colors text-center justify-center text-blue-600 font-medium"
+                        onClick={() => handleNavigation('/admin/crm')}
+                      >
+                        View All Enrollments
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <div className="p-4 text-center text-slate-500 text-sm">
+                      No new enrollments
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* User Menu */}
               <DropdownMenu>

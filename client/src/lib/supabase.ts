@@ -164,6 +164,78 @@ export type Database = {
           created_at: string;
         };
       };
+      mentors: {
+        Row: {
+          id: number;
+          name: string;
+          title: string;
+          description: string | null;
+          experience: string | null;
+          focus: string | null;
+          image_url: string | null;
+          tag1: string | null;
+          tag2: string | null;
+          sort_order: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          title: string;
+          description?: string | null;
+          experience?: string | null;
+          focus?: string | null;
+          image_url?: string | null;
+          tag1?: string | null;
+          tag2?: string | null;
+          sort_order?: number;
+          is_active?: boolean;
+        };
+        Update: {
+          name?: string;
+          title?: string;
+          description?: string | null;
+          experience?: string | null;
+          focus?: string | null;
+          image_url?: string | null;
+          tag1?: string | null;
+          tag2?: string | null;
+          sort_order?: number;
+          is_active?: boolean;
+        };
+      };
+      reviews: {
+        Row: {
+          id: number;
+          name: string;
+          role: string;
+          content: string;
+          rating: number;
+          image_url: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          role: string;
+          content: string;
+          rating?: number;
+          image_url?: string | null;
+          is_active?: boolean;
+        };
+        Update: {
+          name?: string;
+          role?: string;
+          content?: string;
+          rating?: number;
+          image_url?: string | null;
+          is_active?: boolean;
+        };
+      };
     };
   };
 };

@@ -514,6 +514,49 @@ export const enrollmentRouter = router({
     return data || [];
   }),
 
+  getUnreadCount: adminProcedure.query(async () => {
+    if (!supabase) throw new Error("Database not available");
+
+    console.log('[Server] Fetching unread enrollment count...');
+    
+    const { count, error, data } = await supabase
+      .from('enrollments')
+      .select('*', { count: 'exact' })
+      .eq('status', 'pending');
+
+    if (error) {
+      console.error('[Server] Error fetching count:', error);
+      throw error;
+    }
+    
+    console.log('[Server] Pending enrollments count:', count);
+    console.log('[Server] Sample data:', data?.slice(0, 2));
+    return count || 0;
+  }),
+
+  getRecent: adminProcedure
+    .input(z.object({ limit: z.number().default(5) }))
+    .query(async ({ input }) => {
+      if (!supabase) throw new Error("Database not available");
+
+      console.log('[Server] Fetching recent enrollments...');
+
+      const { data, error } = await supabase
+        .from('enrollments')
+        .select('id, name, email, batch, created_at, status')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(input.limit);
+
+      if (error) {
+        console.error('[Server] Error fetching recent:', error);
+        throw error;
+      }
+      
+      console.log('[Server] Recent enrollments:', data?.length, 'found');
+      return data || [];
+    }),
+
   getById: adminProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {

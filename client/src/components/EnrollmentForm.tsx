@@ -644,22 +644,6 @@ export default function EnrollmentForm() {
             )}
           </div>
 
-
-
-          {/* Terms Agreement */}
-          <div className="flex items-start gap-3 animate-slide-in-left" style={{ animationDelay: '0.5s' }}>
-            <input
-              type="checkbox"
-              id="terms"
-              className="mt-1 w-4 h-4 rounded border-[#E0E7FF] text-[#2563EB] focus:ring-[#2563EB]"
-              required
-              disabled={isSubmitting}
-            />
-            <label htmlFor="terms" className="text-sm text-[#7A7A7A]">
-              {t('enroll.form.terms')}
-            </label>
-          </div>
-
           {/* Submit Button */}
           <Button
             type="submit"
